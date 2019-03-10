@@ -1,0 +1,125 @@
+\documentclass[10pt]{article}
+
+\usepackage{amssymb, amsmath}
+\usepackage[a4paper]{geometry}
+\geometry{left={2cm}, right={2cm}, top={2cm}, bottom={2cm}}
+%\geometry{left={3cm}, right={3cm}, top={3cm}, bottom={3cm}}
+
+\begin{document}
+\thispagestyle{empty}
+%% Config
+\newcommand{\Title}{}
+\newcommand{\Student}{Owen Jones}
+\newcommand{\Supervisor}{Dr James Hook}   %That's you!
+\newcommand{\Checker}{Dr Melina Freitag}
+\newcommand{\HoG}{Prof Roger Moser}
+%% Unit code.  Choose from:
+%% MMath S1=MA40117
+%% BSc S2=MA30128
+%% MMath S2=MA40195
+\newcommand{\Unit}{MA30128} 
+\newcommand{\Deadline}{8th May 2019}
+
+\setlength{\topsep}{0pt}
+\setlength{\partopsep}{0pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\begin{center}
+\bfseries{\Large \Unit\ Project}\\[6pt]
+\large\Title Neural Networks for Classification \end{center}
+\medskip
+\begin{center}
+\begin{tabular}{ll}
+Student:&\Student\\
+Supervisors:&\Supervisor\\
+Checker/Second examiner:&\Checker\\
+Head of Group:&\HoG\\
+Final submission deadline:&\Deadline
+\end{tabular}
+\end{center}
+\vspace{-0.4cm}
+\section*{Description}
+%% Blurb that describes the project
+
+Machine learning in general and deep learning in particular have revolutionized our modern understanding of how data can be used and what information can be extracted from it, see \cite{Higham2} and references therein. In this project the student will learn about Neural Networks and how they can be used to solve classification and regression problems. 
+
+The (preliminary) work plan is as follows:
+\begin{itemize}
+\item Read and make notes from \cite{Higham2} to understand neural networks (2-3 weeks).
+\item Write MATLAB or Python code from scratch to implement neural networks with variable architecture and loss functions  (2 weeks).
+\item Apply above code to at least one contest problem from Kaggle (www.kaggle.com) (2 weeks).
+\item As time allows, explore Bayesian Optimization as a method for hyper-parameter tuning \cite{bp,ar} (2-3 weeks).
+\end{itemize}
+The student will give a 20 minute oral presentation (15 minutes plus 5 for questions) on his work. 
+
+A well-structured report, explaining the methods and findings in a coherent way should be produced. It should be no longer than $15$ pages of A4 (not including codes, diagrams and figures), single spaced and typeset in a normal font size (11pt).
+\vspace{-0.6cm}
+\begin{thebibliography}{99}
+\bibitem{Higham2}
+{\sc R. M. Higham and D. J. Higham. Deep Learning: An Introduction for Applied Mathematicians, https: //arxiv.org/abs/1801.05894, 2018.}
+\bibitem{bp}
+{\sc  B. Shahriari \emph{et al}. Taking the Human Out of the Loop:
+A Review of Bayesian Optimization,  \\ https://www.cs.ox.ac.uk/people/nando.defreitas/publications/BayesOptLoop.pdf, 2016.} 
+\bibitem{ar}
+{\sc K. Kandasamy \emph{et al}. Neural Architecture Search with Bayesian Optimization and Optimal Transport, \\ https://arxiv.org/abs/1802.07191, 2018.}
+
+\end{thebibliography}
+\vspace{0.2cm}
+
+\section*{Assessment}
+\begin{center}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% This is typical for a generic maths project
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{tabular}{lr}
+Personal Initiative: &10\\
+Use of the Literature: &10\\
+Style of Report: &10\\
+Contents of Report (depth, breadth, accuracy): &50\\
+Quality of Oral Presentation: &20\\ %This is now unalterable
+
+\cline{2-2}
+TOTAL&100
+\end{tabular}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Suitable for Stats/Modelling
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{tabular}{lr}
+% Background/statistical theory: &25\\
+% Computing : &20\\
+% Analysis and write-up: &35\\
+% Oral presentation: &20\\%Unalterable
+% \cline{2-2}
+% TOTAL&100
+% \end{tabular}
+% \end{center}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Suitable for Math. Biol.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{tabular}{lr}
+% Personal Initiative: &10\\
+% Presentation of Report: &10\\
+% Introduction (mathematical background, biology): &10\\
+% Modelling: &20\\
+% Analysis of models: &20\\
+% Conclusions and interpretation: &10\\
+% Oral presentation: &20\\ %Unalterable
+% \cline{2-2}
+% TOTAL&100
+% \end{tabular}
+\end{center}
+\section*{Signatures}
+
+\begin{tabular}[t]{*{4}{p{1.5in}}}
+Student&Supervisor&Checker&Head of Group\\[1in]
+\Student&\Supervisor&\Checker&\HoG
+\end{tabular}
+
+%\section*{Signatures}
+%
+%\begin{tabular}[t]{*{4}{p{1.5in}}}
+%Student&Supervisor&Checker&Head of Group\\[1in]
+%\Student&\Supervisor&\Checker&\HoG
+%\end{tabular}
+\end{document}
