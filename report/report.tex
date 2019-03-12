@@ -25,7 +25,7 @@
 
 
 
-\section{Logistic Regression: The Artificial Neuron}
+\section{Logistic Regression}
 
     \subsection{Introducing Nonlinearity}
 
@@ -42,7 +42,71 @@
     \subsection{Forward Propagation}
 
     \subsection{Backpropagation}
+        
+        
+        $$ \begin{aligned}
+        J(\theta) &= - \sum_{i=1}^{n} \left( y_i \log(a^{(L)}_i) + (1 - y_i) \log(1 - a^{(L)}_i) \right) \\
+            &= -\mathbf{y}^\top \log(\mathbf{a}^{(L)}) - (\mathbf{1}-\mathbf{y})^\top \log(\mathbf{1} - \mathbf{a}^{(L)})
+        \end{aligned} $$
+        
+        
+        
+        $$
+        \frac{\partial J(\theta)}{\partial \theta^{(L-1)}} =
+            \frac{\partial J(\theta)}{\partial \mathbf{a}^{(L)}} \
+            \frac{\partial \mathbf{a}^{(L)}}{\partial \mathbf{z}^{(L)}} \
+            \frac{\partial \mathbf{z}^{(L)}}{\partial \theta^{(L-1)}}
+        $$
 
+
+
+        $$
+        \frac{\partial J(\theta)}{\partial \theta^{(L-2)}} =
+            \frac{\partial J(\theta)}{\partial \mathbf{a}^{(L)}} \
+            \frac{\partial \mathbf{a}^{(L)}}{\partial \mathbf{z}^{(L)}} \
+            \frac{\partial \mathbf{z}^{(L)}}{\partial \mathbf{a}^{(L-1)}} \
+            \frac{\partial \mathbf{a}^{(L-1)}}{\partial \mathbf{z}^{(L-1)}} \
+            \frac{\partial \mathbf{z}^{(L-1)}}{\partial \mathbf{a}^{(L-2)}}
+        $$
+
+
+
+        $$
+        \delta^{(L)} :=
+            \frac{\partial J(\theta)}{\partial \mathbf{a}^{(L)}} \
+            \frac{\partial \mathbf{a}^{(L)}}{\partial \mathbf{z}^{(L)}} \
+        $$
+        
+        
+        
+        
+        $$
+        \delta^{(l)} :=
+            \delta^{(l+1)} \
+            \frac{\partial \mathbf{z}^{(l+1)}}{\partial \mathbf{a}^{(l)}} \
+            \frac{\partial \mathbf{a}^{(l)}}{\partial \mathbf{z}^{(l)}} \
+        $$
+        
+        
+        
+        
+        $$ \begin{aligned}
+        \frac{\partial J(\theta)}{\partial \mathbf{a}^{(L)}}
+            &= \frac{\partial}{\partial \mathbf{a}^{(L)}}
+               \left( -\mathbf{y} \log(\mathbf{a}^{(L)}) - (1-\mathbf{y}) \log(1 - \mathbf{a}^{(L)}) \right) \\
+            &= \frac{-\mathbf{y}}{\mathbf{a}^{(L)}} - \frac{1 - \mathbf{y}}{1 - \mathbf{a}^{(L)}}
+        \end{aligned} $$
+        
+
+
+        $$ \begin{aligned}
+        \frac{\partial \mathbf{a}^{(L)}}{\partial \mathbf{z}^{(L)}}
+            &= \frac{\partial}{\partial \mathbf{a}^{(L)}} \left( \frac{1}{\mathbf{1} + e^{-\mathbf{z}^{(L)}}} \right) \\
+            &= \left( - e^{-\mathbf{z}^{(L)}} \right) \left( - \left( \mathbf{1} + e^{-\mathbf{z}^{(L)}} \right)^{-2} \right) \\
+            &= \frac{e^{-\mathbf{z}^{(L)}}}{\left( \mathbf{1} + e^{-\mathbf{z}^{(L)}} \right) \left( \mathbf{1} + e^{-\mathbf{z}^{(L)}} \right)} \\
+            &= \left( \frac{1}{\mathbf{1} + e^{-\mathbf{z}^{(L)}}} \right)^\top \left( \frac{\left( \mathbf{1} + e^{-\mathbf{z}^{(L)}} \right) - \mathbf{1}}{\mathbf{1} + e^{-\mathbf{z}^{(L)}}} \right)
+            &= \left( \mathbf{a}^{(L)} \right)^\top \left( \mathbf{1} - \mathbf{a}^{(L)} \right)
+        \end{aligned} $$
 
 
 
