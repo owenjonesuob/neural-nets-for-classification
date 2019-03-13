@@ -1,3 +1,5 @@
 *__pycache__/
-report.[^(tex)(pdf)]
+.ipynb_checkpoints/
+report/report.*
+!report/report.tex
 
