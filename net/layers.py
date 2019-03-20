@@ -7,6 +7,7 @@ class Layer(object):
         
         self.input_size = input_size
         self.output_size = output_size
+        self.weights = np.empty(0)
         
         activations = {
             "none": lambda z: z,
@@ -25,6 +26,12 @@ class Layer(object):
         self.activation_name = activation
         self.activation_fun = activations.get(activation)
         self.activation_deriv_fun = activation_derivs.get(activation)
+    
+    
+
+    def get_weights(self):
+        return self.weights.flatten()
+
 
 
 
@@ -32,7 +39,7 @@ class Input(Layer):
     
     def __init__(self, output_size, activation="none"):
         super().__init__(output_size, output_size, activation)
-        self.weights = np.empty(0)
+
     
     def process(self, inputs):
         self.raw_output = inputs
@@ -55,6 +62,7 @@ class Dense(Layer):
         )
     
 
+
     def process(self, inputs):
         m = inputs.shape[0]
         self.raw_output = np.matmul(
@@ -65,22 +73,25 @@ class Dense(Layer):
         return self.output
     
     
-    def calculate_error(self, next_error, prev_raw_output):
+
+    def get_error(self, next_layer):
         # Omit bias weights
         self.error = np.matmul(
-            next_error,
-            self.weights[:, 1:] if self.add_bias else self.weights
-        ) * self.activation_deriv_fun(prev_raw_output)
+            next_layer.error,
+            next_layer.weights[:, 1:] if next_layer.add_bias else next_layer.weights
+        ) * self.activation_deriv_fun(self.raw_output)
         return self.error
     
     
-    def calculate_grads(self, data, labels, prev_output, penalty=0):
+
+    def get_grads(self, data, labels, prev_layer, penalty=0):
         m = data.shape[0]
         
         grads = 1/m * np.matmul(
-            np.hstack((np.ones((m, 1)), prev_output)).T if self.add_bias else prev_output.T,
+            np.hstack((np.ones((m, 1)), prev_layer.output)).T if self.add_bias else prev_layer.output.T,
             self.error
         )
+
         # Compute regularisation term
         reg = (penalty/m) * self.weights.T
         if self.add_bias:
@@ -90,5 +101,6 @@ class Dense(Layer):
         return self.grads
     
     
+
     def update_weights(self, meh):
         pass

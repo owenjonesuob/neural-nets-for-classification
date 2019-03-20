@@ -45,37 +45,28 @@ class Network(object):
     
     
 
-    def get_weights(self):
-        return np.concatenate([layer.weights.flatten() for layer in self.layers])
+    def get_all_weights(self):
+        return np.concatenate([layer.get_weights() for layer in self.layers])
     
 
     
-    def get_weights_grads(self, data, labels, penalty=0):
-        m = data.shape[0]
+    def get_all_grads(self, data, labels, penalty=0):
+        
         preds = self.predict(data, classes=False)
         
         # The "k+1st" error actually gets stored in Input layer - all fine!
         error = preds - np.eye(self.output_size)[:, labels].T
-        self.layers[0].error = error
+        self.layers[-1].error = error
         all_grads = np.empty(0)
-        
-        for k in range(len(self.layers)-1):
+
+        for k in range(len(self.layers)-2):
             
-            # Calculate gradients using error from next layer
-            grads = 1/m * np.matmul(
-                np.hstack((np.ones((m, 1)), self.layers[-k-2].output)).T if self.layers[-k-1].add_bias else self.layers[-k-2].output.T,
-                error
-            )
-            # Compute regularisation term
-            reg = (penalty/m) * self.layers[-k-1].weights.T
-            if self.layers[-k-1].add_bias:
-                reg[:, 0] = 0
+            error = self.layers[-k-1].get_error(self.layers[-k])
             
-            all_grads = np.concatenate(((grads + reg).flatten(), all_grads))
+            grads = self.layers[-k-1].get_grads(data, labels, self.layers[-k-2].output)
             
-            # Calculate error of next layer
-            error = self.layers[-k-1].calculate_error(self.layers[-k].error, self.layers[-k-2].raw_output)
-        
+            all_grads = np.concatenate((grads.flatten(), all_grads))
+            
         return all_grads
     
     
