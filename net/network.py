@@ -1,3 +1,5 @@
+import numpy as np
+
 class Network(object):
     
     def __init__(self, layers):
@@ -18,6 +20,7 @@ class Network(object):
             k = k+1
     
     
+
     def predict(self, data, classes=True):
         outputs = data
         for k in range(len(self.layers)):
@@ -25,7 +28,11 @@ class Network(object):
         return np.argmax(outputs, axis=1) if classes else outputs
     
     
+
     def get_cost(self, data, labels, penalty=0):
+        """
+        Multiclass logistic cost function
+        """
         m = data.shape[0]
         preds = self.predict(data, classes=False)
         
@@ -37,9 +44,11 @@ class Network(object):
         return cost
     
     
+
     def get_weights(self):
         return np.concatenate([layer.weights.flatten() for layer in self.layers])
     
+
     
     def get_weights_grads(self, data, labels, penalty=0):
         m = data.shape[0]
