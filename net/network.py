@@ -54,16 +54,17 @@ class Network(object):
         
         preds = self.predict(data, classes=False)
         
-        # The "k+1st" error actually gets stored in Input layer - all fine!
+        # The final layer's error is special!
         error = preds - np.eye(self.output_size)[:, labels].T
         self.layers[-1].error = error
-        all_grads = np.empty(0)
+        all_grads = self.layers[-1].get_grads(data, labels, self.layers[-2]).flatten()
+
 
         for k in range(len(self.layers)-2):
             
-            error = self.layers[-k-1].get_error(self.layers[-k])
+            error = self.layers[-k-2].get_error(self.layers[-k-1])
             
-            grads = self.layers[-k-1].get_grads(data, labels, self.layers[-k-2].output)
+            grads = self.layers[-k-2].get_grads(data, labels, self.layers[-k-3])
             
             all_grads = np.concatenate((grads.flatten(), all_grads))
             

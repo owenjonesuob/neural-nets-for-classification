@@ -88,12 +88,12 @@ class Dense(Layer):
         m = data.shape[0]
         
         grads = 1/m * np.matmul(
-            np.hstack((np.ones((m, 1)), prev_layer.output)).T if self.add_bias else prev_layer.output.T,
-            self.error
+            self.error.T,
+            np.hstack((np.ones((m, 1)), prev_layer.output)) if self.add_bias else prev_layer.output
         )
 
         # Compute regularisation term
-        reg = (penalty/m) * self.weights.T
+        reg = (penalty/m) * self.weights
         if self.add_bias:
             reg[:, 0] = 0
         

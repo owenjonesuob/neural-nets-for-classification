@@ -29,8 +29,5 @@ print("Weights:", weights.shape, weights[:10])
 grads = model.get_all_grads(X, y)
 print("Grads:", grads.shape, grads[:10])
 
-
-print(model.layers[-1].grads.shape)
-
-print([l.error.shape for l in model.layers[1:]])
-print([l.grads.shape for l in model.layers[1:]])
+print("Weight shapes:", [l.weights.shape for l in model.layers[1:]])
+print("Grad shapes:  ", [l.grads.shape for l in model.layers[1:]])
