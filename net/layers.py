@@ -35,11 +35,18 @@ class Layer(object):
 
 
 
+
+
+
 class Input(Layer):
     
     def __init__(self, output_size, activation="none"):
         super().__init__(output_size, output_size, activation)
 
+
+    def set_weights(self, new_weights):
+        return True
+        
     
     def process(self, inputs):
         self.raw_output = inputs
@@ -48,19 +55,28 @@ class Input(Layer):
 
 
 
+
 class Dense(Layer):
     
     def __init__(self, input_size, output_size, activation="sigmoid", add_bias=True):
         super().__init__(input_size, output_size, activation)
         self.add_bias = add_bias
+
         self.weights = np.random.uniform(
             -0.1, 0.1,
             size=(
                 self.output_size,
-                self.input_size + 1 if self.add_bias else self.input_size
+                self.input_size+1 if self.add_bias else self.input_size
             )
         )
     
+    
+    def set_weights(self, new_weights):
+        self.weights = new_weights.reshape(
+            self.output_size,
+            self.input_size+1 if self.add_bias else self.input_size
+        )
+        return True
 
 
     def process(self, inputs):
@@ -97,10 +113,6 @@ class Dense(Layer):
         if self.add_bias:
             reg[:, 0] = 0
         
-        self.grads = grads + reg
+        self.grads = (grads + reg).flatten()
         return self.grads
     
-    
-
-    def update_weights(self, meh):
-        pass
