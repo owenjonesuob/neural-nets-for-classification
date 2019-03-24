@@ -24,7 +24,7 @@ model = Network(layers = [
 print("Network show:")
 model.show()
 
-print("Naive preds:", model.predict(X))
+print("Naive preds:", model.predict(X)[:10], "...")
 
 print("Initial cost:", model.get_cost(X, y))
 
@@ -37,10 +37,5 @@ print("Grads:", grads.shape, grads[:10])
 print("Weight shapes:", [l.weights.shape for l in model.layers[1:]])
 print("Grad shapes:  ", [l.grads.shape for l in model.layers[1:]])
 
-# Explodes when rate is too high?
-success = model.train(X, y, max_iters=1000, learning_rate=0.1, penalty=1, report_level=100)
-print("Train success:", success)
 
-
-preds = model.predict(X)
-print(np.mean(preds == y))
+success = model.train(X, y, epochs=100, batch_size=1000, learning_rate=0.1, penalty=1)
