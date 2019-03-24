@@ -68,7 +68,7 @@ class Network(object):
             if not success:
                 raise ValueError("Weights in layer", layer, "not set")
 
-        return True
+        return None
 
 
 
@@ -98,7 +98,7 @@ class Network(object):
     
 
 
-    def train(self, data, labels, epochs=10, batch_size=100, learning_rate=0.1, penalty=0, tolerance=1e-6, verbose=True):
+    def train(self, data, labels, epochs=10, batch_size=100, learning_rate=0.1, penalty=0, tolerance=1e-8, verbose=True):
 
         cost = self.get_cost(data, labels, penalty)
 
@@ -113,7 +113,7 @@ class Network(object):
         print(" 0000 |", cost)
 
 
-        for epoch in range(epochs):
+        for epoch in range(1, epochs+1):
 
             # Split data into batches
             batches = data.shape[0]//batch_size
@@ -137,46 +137,45 @@ class Network(object):
                 
                 current_weights = self.get_all_weights()
                 weights = current_weights - learning_rate*grads
-                success = self.set_all_weights(weights)
-                if not success:
-                    raise ValueError("New weights were not set successfully :(")
+                self.set_all_weights(weights)
 
                 new_batch_cost = self.get_cost(X, y, penalty)
                 
 
-                while new_batch_cost > batch_cost:
+                # Limit to at most [10] new attempts with smaller rates
+                for k in range(10): 
+                    
+                    if new_batch_cost > batch_cost:
 
-                    learning_rate = learning_rate/2
+                        learning_rate = learning_rate/2
 
-                    weights = current_weights - learning_rate*grads
-                    success = self.set_all_weights(weights)
-                    if not success:
-                        raise ValueError("New weights were not set successfully :(")
+                        weights = current_weights - learning_rate*grads
+                        self.set_all_weights(weights)
 
-                    new_batch_cost = self.get_cost(X, y, penalty)
+                        new_batch_cost = self.get_cost(X, y, penalty)
+                    
+                    else:
+                        break
                     
 
                 # Grow rate
                 learning_rate = learning_rate*1.1
 
 
-            # Stopping criterion - cost over all data            
-            new_cost = self.get_cost(data, labels, penalty)
+            cost = self.get_cost(data, labels, penalty)
+            self.cost_history[epoch] = cost
 
-            if abs(cost - new_cost) < tolerance:
+            # Stopping criterion - consistently small decrease over 5 epochs
+            if all(np.diff(-self.cost_history[max(0, epoch-5):(epoch+1)]) < tolerance):
                 if verbose:
                     print("Tolerance reached - terminating early!")
-                
-                self.cost_history[epoch] = cost
-                self.cost_history = self.cost_history[:epoch+1]
+                    self.cost_history = self.cost_history[:(epoch+1)]
+                    
                 break
                 
             else:
-                cost = new_cost
-                self.cost_history[epoch] = cost
-            
                 if verbose:
-                    print(" " + str(epoch+1).zfill(4) + " | " + str(cost))
+                    print(" " + str(epoch).zfill(4) + " | " + str(cost))
         
         
         if verbose:

@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+
 
 def make_sets(data, labels, props, shuffle=True):
     
@@ -20,3 +22,31 @@ def make_sets(data, labels, props, shuffle=True):
         cursor = int(p*m)
     
     return sets
+
+
+
+
+
+def plot_boundary(model, data, labels, subdivs=200, alpha=0.2):
+    
+    if data.shape[1] != 2:
+        raise ValueError("Can only visualise 2D data")
+
+    fig, ax = plt.subplots()
+    ax.scatter(data[:, 0], data[:, 1], c=labels)
+    
+    xmin, xmax = ax.get_xlim()
+    xstep = (xmax-xmin)/subdivs
+    ymin, ymax = ax.get_ylim()
+    ystep = (ymax-ymin)/subdivs
+    
+    grid = np.mgrid[xmin:xmax:xstep, ymin:ymax:ystep].reshape(2, -1).T
+    
+    ax.contourf(np.arange(xmin, xmax, xstep), np.arange(ymin, ymax, ystep),
+               model.predict(grid).reshape(-1, subdivs).T,
+               alpha = alpha)
+    
+    ax.scatter(data[:, 0], data[:, 1], c=labels)
+    plt.show()
+    
+    return None
