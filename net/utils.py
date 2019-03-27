@@ -41,7 +41,7 @@ def plot_boundary(model, data, labels, subdivs=200, alpha=0.2):
     ystep = (ymax-ymin)/subdivs
     
     grid = np.mgrid[xmin:xmax:xstep, ymin:ymax:ystep].reshape(2, -1).T
-    
+
     ax.contourf(np.arange(xmin, xmax, xstep), np.arange(ymin, ymax, ystep),
                model.predict(grid).reshape(-1, subdivs).T,
                alpha = alpha)
@@ -50,3 +50,10 @@ def plot_boundary(model, data, labels, subdivs=200, alpha=0.2):
     plt.show()
     
     return None
+
+
+
+def scale_minmax(data):
+    scaled = np.amax(data, axis=0) - data
+    scaled = scaled / (np.amax(data, axis=0) - np.amin(data, axis=0))
+    return scaled

@@ -24,8 +24,8 @@ class Network(object):
 
     def predict(self, data, classes=True):
         outputs = data
-        for k in range(len(self.layers)):
-            outputs = self.layers[k].process(outputs)
+        for layer in self.layers:
+            outputs = layer.process(outputs)
         return np.argmax(outputs, axis=1) if classes else outputs
 
 
@@ -143,7 +143,7 @@ class Network(object):
                 
 
                 # Limit to at most [10] new attempts with smaller rates
-                for k in range(10): 
+                for _ in range(10): 
                     
                     if new_batch_cost > batch_cost:
 
@@ -164,9 +164,9 @@ class Network(object):
 
             cost = self.get_cost(data, labels, penalty)
             self.cost_history[epoch] = cost
-
+            
             # Stopping criterion - consistently small decrease over 5 epochs
-            if all(np.diff(-self.cost_history[max(0, epoch-5):(epoch+1)]) < tolerance):
+            if all(abs(np.diff(self.cost_history[max(0, epoch-5):(epoch+1)])) < tolerance):
                 if verbose:
                     print("Tolerance reached - terminating early!")
                     self.cost_history = self.cost_history[:(epoch+1)]
