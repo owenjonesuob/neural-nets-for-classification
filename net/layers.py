@@ -11,16 +11,16 @@ class Layer(object):
         
         activations = {
             "none": lambda z: z,
-            "relu": lambda z: max(0, z),
-            "sigmoid": lambda z: 1/(1 + np.exp(-z)),
-            "softmax": lambda z: np.exp(z)/np.exp(z).sum()
+            "relu": lambda z: np.maximum(0, z),
+            "sigmoid": lambda z: 1 / (1 + np.exp(-z)),
+            "softmax": lambda z: np.exp(z-z.max(axis=1)[:, np.newaxis]) / np.exp(z-z.max(axis=1)[:, np.newaxis]).sum(axis=1)[:, np.newaxis]
         }
         
         activation_derivs = {
-            "none": lambda z: 1,
-            "relu": lambda z: 1 if z > 0 else 1,
-            "sigmoid": lambda z: 1/(1 + np.exp(-z)) * (1 - 1/(1 + np.exp(-z))),
-            "softmax": lambda z: z # TODO
+            "none": lambda z: np.ones(z.shape),
+            "relu": lambda z: np.heaviside(z, 1),
+            "sigmoid": lambda z: activations["sigmoid"](z) * (1 - activations["sigmoid"](z)),
+            "softmax": lambda z: activations["softmax"](z) * (1 - activations["softmax"](z))
         }
         
         self.activation_name = activation
@@ -55,6 +55,8 @@ class Input(Layer):
 
 
 
+
+        
 
 class Dense(Layer):
     
@@ -108,7 +110,7 @@ class Dense(Layer):
             np.hstack((np.ones((m, 1)), prev_layer.output)) if self.add_bias else prev_layer.output
         )
 
-        # Compute regularisation term
+        # Compute regularisation term for non-bias weights only
         reg = (penalty/m) * self.weights
         if self.add_bias:
             reg[:, 0] = 0
