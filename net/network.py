@@ -98,31 +98,31 @@ class Network(object):
     
 
 
-    def train(self, data, labels, epochs=10, batch_size=100, learning_rate=0.1, penalty=0, tolerance=1e-8, verbose=True):
+    def train(self, train_data, train_labels, val_data=None, val_labels=None, epochs=10, batch_size=100, learning_rate=0.1, penalty=0, tolerance=1e-8, verbose=True):
 
-        cost = self.get_cost(data, labels, penalty)
+        train_cost = self.get_cost(train_data, train_labels, penalty)
 
-        self.cost_history = np.empty(epochs+1)
-        self.cost_history[0] = cost
+        self.train_cost_history = np.empty(epochs+1)
+        self.train_cost_history[0] = train_cost
 
 
         print("Training in progress...")
         print("")
         print("Epoch | Cost")
         print("----- | ----")
-        print(" 0000 |", cost)
+        print(" 0000 |", train_cost)
 
 
         for epoch in range(1, epochs+1):
 
             # Split data into batches
-            batches = data.shape[0]//batch_size
-            p = batch_size / data.shape[0]
+            batches = train_data.shape[0]//batch_size
+            p = batch_size / train_data.shape[0]
             props = batches*[p]
-            if data.shape[0] % batch_size != 0:
+            if train_data.shape[0] % batch_size != 0:
                 props.append(1 - batches*p)                
                 batches = batches + 1
-            data_sets = make_sets(data, labels, props)
+            data_sets = make_sets(train_data, train_labels, props)
 
 
             for batch in range(batches):
@@ -142,8 +142,8 @@ class Network(object):
                 new_batch_cost = self.get_cost(X, y, penalty)
                 
 
-                # Limit to at most [10] new attempts with smaller rates
-                for _ in range(10): 
+                #Limit to at most [20] new attempts with smaller rates
+                for _ in range(20): 
                     
                     if new_batch_cost > batch_cost:
 
@@ -159,31 +159,33 @@ class Network(object):
                     
 
                 # Grow rate
-                learning_rate = learning_rate*1.1
+                learning_rate = learning_rate*1.2
 
 
-            cost = self.get_cost(data, labels, penalty)
-            self.cost_history[epoch] = cost
+            train_cost = self.get_cost(train_data, train_labels, penalty)
+            self.train_cost_history[epoch] = train_cost
             
             # Stopping criterion - consistently small decrease over 5 epochs
-            if all(abs(np.diff(self.cost_history[max(0, epoch-5):(epoch+1)])) < tolerance):
+            if all(abs(np.diff(self.train_cost_history[max(0, epoch-5):(epoch+1)])) < tolerance):
                 if verbose:
                     print("Tolerance reached - terminating early!")
-                    self.cost_history = self.cost_history[:(epoch+1)]
+                    self.train_cost_history = self.train_cost_history[:(epoch+1)]
                     
                 break
                 
             else:
                 if verbose:
-                    print(" " + str(epoch).zfill(4) + " | " + str(cost))
+                    print(" " + str(epoch).zfill(4) + " | " + str(train_cost))
         
         
         if verbose:
             print("")
             print("Training complete!")
             print("Epochs completed:", epoch)
-            print("Final cost:", self.cost_history[-1])
-            print("Training accuracy:", self.get_accuracy(data, labels))
+            print("Final training cost:", self.train_cost_history[-1])
+            print("Training accuracy:", self.get_accuracy(train_data, train_labels))
+            print("Final validation cost:", self.val_cost_history[-1])
+            print("Validation accuracy:", self.get_accuracy(val_data, val_labels))
 
         return True
 
