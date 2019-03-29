@@ -25,9 +25,14 @@ def make_sets(data, labels, props, shuffle=True):
 
 
 
+def scale_minmax(data):
+    scaled = np.amax(data, axis=0) - data
+    scaled = scaled / (np.amax(data, axis=0) - np.amin(data, axis=0))
+    return scaled
 
 
-def plot_boundary(model, data, labels, subdivs=200, alpha=0.2):
+
+def plot_boundaries(model, data, labels, subdivs=200, alpha=0.2):
     
     if data.shape[1] != 2:
         raise ValueError("Can only visualise 2D data")
@@ -53,7 +58,12 @@ def plot_boundary(model, data, labels, subdivs=200, alpha=0.2):
 
 
 
-def scale_minmax(data):
-    scaled = np.amax(data, axis=0) - data
-    scaled = scaled / (np.amax(data, axis=0) - np.amin(data, axis=0))
-    return scaled
+def plot_cost_curves(model, val_curve=True):
+
+    plt.plot(model.train_cost_history)
+    if val_curve:
+        plt.plot(model.val_cost_history)
+        
+    plt.show()
+
+    return None
