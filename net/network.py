@@ -98,19 +98,33 @@ class Network(object):
     
 
 
-    def train(self, train_data, train_labels, val_data=None, val_labels=None, epochs=10, batch_size=100, learning_rate=0.1, penalty=0, tolerance=1e-8, verbose=True):
+    def train(self, train_data, train_labels, val_data=None, val_labels=None, epochs=10, batch_size=100, learning_rate=0.1, penalty=0, early_stopping=True, verbose=True):
 
         train_cost = self.get_cost(train_data, train_labels, penalty)
-
         self.train_cost_history = np.empty(epochs+1)
         self.train_cost_history[0] = train_cost
+
+        
+        if val_data is not None:
+            val_cost = self.get_cost(val_data, val_labels, penalty)
+            self.val_cost_history = np.empty(epochs+1)
+            self.val_cost_history[0] = val_cost
+            min_val_cost = val_cost
+            best_weights = (0, self.get_all_weights())
+
 
 
         print("Training in progress...")
         print("")
-        print("Epoch | Cost")
-        print("----- | ----")
-        print(" 0000 |", train_cost)
+
+        if val_data is not None:
+            print("Epoch | Train cost | Validation cost")
+            print("----- | ---------- | ---------------")
+            print(" 0000 |", "%.4f" % train_cost, "|", "%.4f" % val_cost)
+        else:
+            print("Epoch | Cost")
+            print("----- | ----")
+            print(" 0000 |", "%.4f" % train_cost)
 
 
         for epoch in range(1, epochs+1):
@@ -164,18 +178,39 @@ class Network(object):
 
             train_cost = self.get_cost(train_data, train_labels, penalty)
             self.train_cost_history[epoch] = train_cost
+
+            if val_data is not None:
+                val_cost = self.get_cost(val_data, val_labels, penalty)
+                self.val_cost_history[epoch] = val_cost
+                if val_cost < min_val_cost:
+                    min_val_cost = val_cost
+                    best_weights = (epoch, self.get_all_weights())
             
-            # Stopping criterion - consistently small decrease over 5 epochs
-            if all(abs(np.diff(self.train_cost_history[max(0, epoch-5):(epoch+1)])) < tolerance):
+
+            # Early stopping criterion - validation cost starts increasing...
+            if (
+                early_stopping and
+                val_data is not None and
+                epoch > 200 and
+                self.val_cost_history[(epoch-100):(epoch+1)].mean() >= self.val_cost_history[(epoch-200):(epoch-99)].mean()
+            ) or np.isnan(train_cost):
+
                 if verbose:
-                    print("Tolerance reached - terminating early!")
+                    print("Validation cost not decreasing - terminating early!")
+                    print("Resetting to 'best' model (epoch " + str(best_weights[0]) + ")")
+                    print("")
                     self.train_cost_history = self.train_cost_history[:(epoch+1)]
+                    self.val_cost_history = self.val_cost_history[:(epoch+1)]
+                    self.set_all_weights(best_weights[1])
                     
                 break
                 
             else:
                 if verbose:
-                    print(" " + str(epoch).zfill(4) + " | " + str(train_cost))
+                    if val_data is not None:
+                        print(" " + str(epoch).zfill(4) + " | " + "%.4f" % train_cost, " | ", "%.4f" % val_cost)
+                    else:
+                        print(" " + str(epoch).zfill(4) + " | " + "%.4f" % train_cost)
         
         
         if verbose:
@@ -183,9 +218,10 @@ class Network(object):
             print("Training complete!")
             print("Epochs completed:", epoch)
             print("Final training cost:", self.train_cost_history[-1])
-            print("Training accuracy:", self.get_accuracy(train_data, train_labels))
-            print("Final validation cost:", self.val_cost_history[-1])
-            print("Validation accuracy:", self.get_accuracy(val_data, val_labels))
+            print("Final training accuracy:", self.get_accuracy(train_data, train_labels))
+            if val_data is not None:
+                print("Best validation cost:", min_val_cost)
+                print("Best validation accuracy:", self.get_accuracy(val_data, val_labels))
 
         return True
 
