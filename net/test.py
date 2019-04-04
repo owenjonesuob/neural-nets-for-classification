@@ -26,6 +26,9 @@ success = model.train(X, y, epochs=400, batch_size=512, learning_rate=10, penalt
 utils.plot_cost_curves(model, val_curve=False)
 utils.plot_boundaries(model, X, y, subdivs=150)
 
+cv_acc = model.cross_validate(X, y, folds=10, val_prop=0.2, epochs=400, batch_size=512, learning_rate=10, penalty=0)
+print("Crossval accuracy:", cv_acc)
+
 
 
 X_train, y_train, X_val, y_val = utils.make_sets(X, y, [0.8, 0.2])
@@ -46,20 +49,28 @@ utils.plot_boundaries(model, X, y, subdivs=150)
 
 #X, y = make_blobs(10000, 2, 4)
 
-X, y = make_blobs(10000, 2, 4)#, center_box=(10, 30))
-X = utils.scale_minmax(X)
+X, y = make_blobs(5000, 2, 4, center_box=(10, 30))
+X_train, y_train, X_val, y_val = utils.make_sets(X, y, [0.8, 0.2])
 
-plt.scatter(X[:, 0], X[:, 1], c=y)
+X_train = utils.scale_minmax(X_train)
+X_val = utils.scale_minmax(X_val)
+
+plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train)
 plt.show()
 
 model2 = Network(layers = [
     Input(2),
-    Dense(2, 50, "sigmoid"),
-    Dense(50, 20, "sigmoid"),
-    Dense(20, 4, "softmax")
+    Dense(2, 30, "sigmoid"),
+    Dense(30, 10, "sigmoid"),
+    Dense(10, 4, "softmax")
 ])
 
 
-success = model2.train(X, y, epochs=100, batch_size=128, learning_rate=1, penalty=0.1)
-utils.plot_cost_curves(model2, val_curve=False)
-utils.plot_boundaries(model2, X, y, subdivs=100)
+success = model2.train(X_train, y_train, X_val, y_val, epochs=1000, batch_size=128, learning_rate=1, penalty=0.1)
+utils.plot_cost_curves(model2)
+utils.plot_boundaries(model2, X_train, y_train, subdivs=100)
+utils.plot_boundaries(model2, X_val, y_val, subdivs=100)
+
+
+#cv_acc = model2.cross_validate(X, y, folds=10, val_prop=0.2, epochs=1000, batch_size=128, learning_rate=1, penalty=0.1)
+#print("Crossval accuracy:", cv_acc)

@@ -21,6 +21,12 @@ class Network(object):
             k = k+1
     
     
+    def reset(self):
+        for layer in self.layers[1:]:
+            layer.__init__(layer.input_size, layer.output_size, layer.activation_name, layer.add_bias)
+        return None
+
+
 
     def predict(self, data, classes=True):
         outputs = data
@@ -71,7 +77,6 @@ class Network(object):
         return None
 
 
-
     
     def get_all_grads(self, data, labels, penalty=0):
         
@@ -98,7 +103,7 @@ class Network(object):
     
 
 
-    def train(self, train_data, train_labels, val_data=None, val_labels=None, epochs=10, batch_size=100, learning_rate=0.1, penalty=0, early_stopping=True, verbose=True):
+    def train(self, train_data, train_labels, val_data=None, val_labels=None, epochs=100, batch_size=128, learning_rate=0.1, penalty=0, early_stopping=100, verbose=True):
 
         train_cost = self.get_cost(train_data, train_labels, penalty)
         self.train_cost_history = np.empty(epochs+1)
@@ -107,24 +112,26 @@ class Network(object):
         
         if val_data is not None:
             val_cost = self.get_cost(val_data, val_labels, penalty)
+            val_acc = self.get_accuracy(val_data, val_labels)
             self.val_cost_history = np.empty(epochs+1)
             self.val_cost_history[0] = val_cost
             min_val_cost = val_cost
-            best_weights = (0, self.get_all_weights())
+            self.best_epoch = (0, self.get_all_weights(), val_acc)
 
 
 
-        print("Training in progress...")
-        print("")
+        if verbose:
+            print("Training in progress...")
+            print("")
 
-        if val_data is not None:
-            print("Epoch | Train cost | Validation cost")
-            print("----- | ---------- | ---------------")
-            print(" 0000 |", "%.4f" % train_cost, "|", "%.4f" % val_cost)
-        else:
-            print("Epoch | Cost")
-            print("----- | ----")
-            print(" 0000 |", "%.4f" % train_cost)
+            if val_data is not None:
+                print("Epoch | Train cost | Validation cost | Validation accuracy %")
+                print("----- | ---------- | --------------- | ---------------------")
+                print(" 0000 |", "%.4f" % train_cost, "|", "%.4f" % val_cost, "|", "%.2f" % (val_acc*100))
+            else:
+                print("Epoch | Cost")
+                print("----- | ----")
+                print(" 0000 |", "%.4f" % train_cost)
 
 
         for epoch in range(1, epochs+1):
@@ -181,34 +188,37 @@ class Network(object):
 
             if val_data is not None:
                 val_cost = self.get_cost(val_data, val_labels, penalty)
+                val_acc = self.get_accuracy(val_data, val_labels)
                 self.val_cost_history[epoch] = val_cost
                 if val_cost < min_val_cost:
                     min_val_cost = val_cost
-                    best_weights = (epoch, self.get_all_weights())
+                    self.best_epoch = (epoch, self.get_all_weights(), val_acc)
             
 
             # Early stopping criterion - validation cost starts increasing...
             if (
-                early_stopping and
+                early_stopping > 0 and
                 val_data is not None and
-                epoch > 200 and
-                self.val_cost_history[(epoch-100):(epoch+1)].mean() >= self.val_cost_history[(epoch-200):(epoch-99)].mean()
+                epoch > 2*early_stopping and
+                (self.val_cost_history[(epoch-early_stopping+1):(epoch+1)].mean() >= 
+                    self.val_cost_history[(epoch-(2*early_stopping+1)):(epoch-early_stopping+1)].mean())
             ) or np.isnan(train_cost):
 
                 if verbose:
                     print("Validation cost not decreasing - terminating early!")
-                    print("Resetting to 'best' model (epoch " + str(best_weights[0]) + ")")
+                    print("Resetting to 'best' model (epoch " + str(self.best_epoch[0]) + ")")
                     print("")
                     self.train_cost_history = self.train_cost_history[:(epoch+1)]
                     self.val_cost_history = self.val_cost_history[:(epoch+1)]
-                    self.set_all_weights(best_weights[1])
+                    self.set_all_weights(self.best_epoch[1])
                     
                 break
                 
             else:
                 if verbose:
                     if val_data is not None:
-                        print(" " + str(epoch).zfill(4) + " | " + "%.4f" % train_cost, " | ", "%.4f" % val_cost)
+                        print(" " + str(epoch).zfill(4) + " | " + "%.4f" % train_cost +
+                                " | " + "%.4f" % val_cost + " | " + "%.2f" % (val_acc*100))
                     else:
                         print(" " + str(epoch).zfill(4) + " | " + "%.4f" % train_cost)
         
@@ -224,6 +234,44 @@ class Network(object):
                 print("Best validation accuracy:", self.get_accuracy(val_data, val_labels))
 
         return True
+    
+
+
+    def cross_validate(self, data, labels, folds=10, val_prop=0.2, val_data=None, val_labels=None, epochs=100, batch_size=128, learning_rate=0.1, penalty=0, early_stopping=100, verbose=False):
+
+        print("Performing {}-fold cross-validation...".format(folds))
+
+        # Split data in preparation for cross-validation...
+        data_sets = make_sets(data, labels, [1/folds]*folds)
+
+        accs = np.zeros(folds)
+
+        for fold in range(folds):
+
+            # Isolate validation set
+            X_val, y_val = data_sets[2*fold], data_sets[2*fold + 1]
+            # Training set is ever-so-slightly trickier!
+            X_train = np.vstack([data_set for j, data_set in enumerate(data_sets[::2]) if j != fold])
+            y_train = np.concatenate([data_set for j, data_set in enumerate(data_sets[1::2]) if j != fold])
+
+            self.reset()
+
+            success = self.train(X_train, y_train, X_val, y_val, epochs, batch_size, learning_rate, penalty, early_stopping, verbose)
+
+            print("Fold: {0} | Best epoch: {1} | Validation accuracy: {2}%".format(
+                fold+1,
+                self.best_epoch[0],
+                self.best_epoch[2]*100
+            ))
+
+            accs[fold] = self.best_epoch[2]
+        
+        print("Average validation accuracy of {}%".format(round(accs.mean()*100, 2)))
+        print("")
+
+        return accs.mean()
+    
+
 
 
 
