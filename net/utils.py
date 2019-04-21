@@ -67,3 +67,41 @@ def plot_cost_curves(model, val_curve=True):
     plt.show()
 
     return None
+
+
+
+def cross_validate(model, data, labels, folds=10, val_prop=0.2, val_data=None, val_labels=None, epochs=100, batch_size=128, learning_rate=0.1, penalty=0, early_stopping=100, verbose=False):
+
+    dummy = model
+
+    print("Performing {}-fold cross-validation...".format(folds))
+
+    # Split data in preparation for cross-validation...
+    data_sets = make_sets(data, labels, [1/folds]*folds)
+
+    accs = np.zeros(folds)
+
+    for fold in range(folds):
+
+        # Isolate validation set
+        X_val, y_val = data_sets[2*fold], data_sets[2*fold + 1]
+        # Training set is ever-so-slightly trickier!
+        X_train = np.vstack([data_set for j, data_set in enumerate(data_sets[::2]) if j != fold])
+        y_train = np.concatenate([data_set for j, data_set in enumerate(data_sets[1::2]) if j != fold])
+
+        dummy.reset()
+
+        success = dummy.train(X_train, y_train, X_val, y_val, epochs, batch_size, learning_rate, penalty, early_stopping, verbose)
+
+        print("Fold: {0} | Best epoch: {1} | Validation accuracy: {2}%".format(
+            fold+1,
+            dummy.best_epoch[0],
+            dummy.best_epoch[2]*100
+        ))
+
+        accs[fold] = dummy.best_epoch[2]
+    
+    print("Average validation accuracy of {}%".format(round(accs.mean()*100, 2)))
+    print("")
+
+    return accs.mean()
