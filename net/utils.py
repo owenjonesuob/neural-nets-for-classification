@@ -105,3 +105,14 @@ def cross_validate(model, data, labels, folds=10, val_prop=0.2, val_data=None, v
     print("")
 
     return accs.mean()
+
+
+
+def confusion_matrix(preds, labels):
+    n = len(np.unique(labels)) # Number of classes 
+    result = np.zeros((n, n))
+
+    for k in range(len(labels)):
+        result[preds[k], labels[k]] += 1
+
+    return result
