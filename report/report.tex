@@ -90,9 +90,9 @@
             If $\mathbf{a}^{(L)} = \sigma(\mathbf{z}^{(L)})$ is the activated output of the final layer $L$ of the network, where $\sigma$ is either the sigmoid or softmax activation function, then
             
             $$
-            \mathbf{\delta}^{(L)} = \left( \mathbf{a}^{(L)} \right)^\top \left( \mathbf{1} - \mathbf{a}^{(L)} \right)$$
+            \mathbf{\delta}^{(L)} = \mathbf{a}^{(L)} - \mathbf{y}
+            $$
             
-            where $\mathbf{1} = (1, ..., 1)^\top \in \mathbb{R}^{n_{L}}$.
         \end{lemma}
         
         
@@ -124,11 +124,11 @@
                 Note that if $i \neq j$ then this is clearly zero. If $i = j$,
                 
                 $$ \begin{aligned}
-                \frac{\partial a^{(L)}_i}{\partial z^{(L)}_i}
-                &= \left( - e^{-z^{(L)}_i} \right) \left( - \left( 1 + e^{-z^{(L)}_i} \right)^{-2} \right) \\
-                &= \frac{e^{-z^{(L)}_i}}{\left( 1 + e^{-z^{(L)}_i} \right) \left( 1 + e^{-z^{(L)}_i} \right)} \\
-                &= \left( \frac{1}{1 + e^{-z^{(L)}_i}} \right) \left( \frac{\left( 1 + e^{-z^{(L)}_i} \right) - 1}{1 + e^{-z^{(L)}_i}} \right) \\
-                &= \sigma(z^{(L)}_i) \left( 1 - \sigma(z^{(L)}_i) \right)
+                \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j}
+                &= \left( - e^{-z^{(L)}_j} \right) \left( - \left( 1 + e^{-z^{(L)}_j} \right)^{-2} \right) \\
+                &= \frac{e^{-z^{(L)}_j}}{\left( 1 + e^{-z^{(L)}_j} \right) \left( 1 + e^{-z^{(L)}_j} \right)} \\
+                &= \left( \frac{1}{1 + e^{-z^{(L)}_j}} \right) \left( \frac{\left( 1 + e^{-z^{(L)}_j} \right) - 1}{1 + e^{-z^{(L)}_j}} \right) \\
+                &= \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right)
                 \end{aligned} $$
                 
             
@@ -153,30 +153,45 @@
                 On the other hand, if $i = j$,
                 
                 $$ \begin{aligned}
-                \frac{\partial a^{(L)}_i}{\partial z^{(L)}_i}
-                &= \frac{\left( e^{z^{(L)}_i} \cdot \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right) - \left( e^{z^{(L)}_i} \right)^2}{\left( \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right)^2} \\
-                &= \frac{e^{z^{(L)}_i}}{\sum_{k=0}^{n_L} e^{z^{(L)}_k}} \left( 1 - \frac{e^{z^{(L)}_i}}{\sum_{k=0}^{n_L} e^{z^{(L)}_k}} \right) \\
-                &= \sigma(z^{(L)}_i) \left( 1 - \sigma(z^{(L)}_i) \right)
+                \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j}
+                &= \frac{\left( e^{z^{(L)}_j} \cdot \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right) - \left( e^{z^{(L)}_j} \right)^2}{\left( \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right)^2} \\
+                &= \frac{e^{z^{(L)}_j}}{\sum_{k=0}^{n_L} e^{z^{(L)}_k}} \left( 1 - \frac{e^{z^{(L)}_j}}{\sum_{k=0}^{n_L} e^{z^{(L)}_k}} \right) \\
+                &= \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right)
                 \end{aligned} $$
                 
             \end{itemize}
             
-            Therefore in both cases, THIS.
+            Therefore in both cases, we have that $\frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} = \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right)$.
             
-            Next:
+            Now using the definition of $\mathbf{\delta}^{(L)}$ and the chain rule, and combining the two previous results,
             
-            $$
-            \delta^{(L)} =
-            \frac{\partial J(\theta)}{\partial \mathbf{z}^{(L)}} =
-            \frac{\partial J(\theta)}{\partial \mathbf{a}^{(L)}} \ \frac{\partial \mathbf{a}^{(L)}}{\partial \mathbf{z}^{(L)}}
-            $$
+            $$ \begin{aligned}
+            \delta^{(L)}_j &= \frac{\partial J(\theta)}{\partial z^{(L)}_j} \\
+            &= \sum_{i = 0}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
+            &= \left( - \frac{y_j}{a^{(L)}_j} + \frac{1 - y_j}{1 - a^{(L)}_j} \right) \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right)
+            \end{aligned} $$
             
+            Then recalling that $\sigma(z^{(L)}_j) = a^{(L)}_j$ by definition,
+            
+            $$ \begin{aligned}
+            \delta^{(L)}_j &= \left( - \frac{y_j}{a^{(L)}_j} + \frac{1 - y_j}{1 - a^{(L)}_j} \right) a^{(L)}_j \left( 1 - a^{(L)}_j \right) \\
+            &= a^{(L)}_j (1 - y_j) - y_j (1 - a^{(L)}_j) \\
+            &= a^{(L)}_j - y_j
+            \end{aligned} $$
+            
+            % TODO this is fine for sigmoid, but not softmax
     
     
     
         \end{proof}
 
 
+
+
+
+$$ \begin{cases}
+\left( - \frac{y_j}{a^{(L)}_j} + \frac{1 - y_j}{1 - a^{(L)}_j} \right) \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right) + \sum_{i=0}^{n_L} \left( \left( - \frac{y_i}{a^{(L)}_i} + \frac{1 - y_i}{1 - a^{(L)}_i} \right) \left( - \sigma(z_i) \sigma(z_j) \right) \right) & \text{for softmax activation}
+\end{cases}$$
         
         
         $$
