@@ -187,11 +187,13 @@
 
 
 
-
+% TODO incorporate this for softmax?
 
 $$ \begin{cases}
 \left( - \frac{y_j}{a^{(L)}_j} + \frac{1 - y_j}{1 - a^{(L)}_j} \right) \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right) + \sum_{i=0}^{n_L} \left( \left( - \frac{y_i}{a^{(L)}_i} + \frac{1 - y_i}{1 - a^{(L)}_i} \right) \left( - \sigma(z_i) \sigma(z_j) \right) \right) & \text{for softmax activation}
 \end{cases}$$
+        
+        
         
         
         $$
