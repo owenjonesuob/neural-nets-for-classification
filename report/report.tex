@@ -28,9 +28,18 @@
 
 \section{Introduction to Classification Problems}
 
+    Historically, machine learning tasks have fallen into one of several categories: supervised learning problems, unsupervised learning problems, and more recently reinforcement learning
+    
+    Classification tasks (in the sense which this paper considers) belong to the supervised learning family of tasks, where the training process uses
+    
+    qualitative outputs
+    
+    In Section \ref{sec:demos} of this paper, the 
 
 
 \section{Logistic Regression}
+
+    
 
     \subsection{Introducing Nonlinearity}
 
@@ -76,7 +85,7 @@
 
 
 
-    Where we define the "error" of layer $l$ as
+        Where we define the "error" of layer $l$ as
     
         $$
         \mathbf{\delta}^{(L)} :=  \frac{\partial J}{\partial \mathbf{z}^{(l)}} \in \mathbb{R}^{n_l}
@@ -194,6 +203,8 @@ $$ \begin{cases}
 \end{cases}$$
         
         
+        Now
+        
         
         
         $$
@@ -224,6 +235,7 @@ $$ \begin{cases}
 
 
 \section{Demonstration of Methods}
+\label{sec:demos}
 
     \subsection{Binary Classification}
     
@@ -236,15 +248,8 @@ $$ \begin{cases}
 
 
 
-
-\section*{References}
-
-	\begin{itemize}
-	
-		\item[] C. HIGHAM AND D. HIGHAM, \textit{Deep learning: an introduction for applied mathematicians}, arXiv 1801.05894 [cs.LG], (2018).
-
-	\end{itemize}
-
+\bibliography{report}
+\bibliographystyle{abbrv}
 
 \end{document}
 	

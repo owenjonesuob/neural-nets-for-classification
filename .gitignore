@@ -2,4 +2,4 @@
 .ipynb_checkpoints/
 report/report.*
 !report/report.tex
-
+!report/report.bbl
