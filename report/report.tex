@@ -98,7 +98,7 @@
         Where we define the "error" of layer $l$ as
     
         $$
-        \mathbf{\delta}^{(L)} :=  \frac{\partial J}{\partial \mathbf{z}^{(l)}} \in \mathbb{R}^{n_l}
+        \mathbf{\delta}^{(l)} :=  \frac{\partial J}{\partial \mathbf{z}^{(l)}} \in \mathbb{R}^{n_l}
         $$
         
         The $j$th component of this error vector is a measure of the sensitivity of the cost function $J(\theta)$ to the (weighted) input from neuron $j$ in layer $l$. Although it is \textit{not} a direct measure of how much a particular neuron is at fault for mistakes in the network's eventual output, such an explanation is at least valid intuitively, since all partial derivatives must be zero if the cost function is at a minimum.
@@ -122,9 +122,9 @@
             Denoting the expected output of the network as $\mathbf{y}$, observe that the partial derivative of $J$ with respect to the $j$th component of the activated output $\mathbf{a}^{(L)}$ can be represented as
                     
             $$ \begin{aligned}
-            \frac{\partial J(\theta)}{\partial a^{(L)}_j}
-            &= \frac{\partial}{\partial a^{(L)}_j} \left( - \sum_{k=0}^{n_L} \left( y_k \log(a^{(L)}_k) + (1 - y_k) \log(1 - a^{(L)}_k) \right) \right) \\
-            &= - \frac{y_j}{a^{(L)}_j} + \frac{1 - y_j}{1 - a^{(L)}_j}
+            \frac{\partial J(\theta)}{\partial a^{(L)}_i}
+            &= \frac{\partial}{\partial a^{(L)}_i} \left( - \sum_{k=0}^{n_L} \left( y_k \log(a^{(L)}_k) + (1 - y_k) \log(1 - a^{(L)}_k) \right) \right) \\
+            &= - \frac{y_i}{a^{(L)}_i} + \frac{1 - y_i}{1 - a^{(L)}_i}
             \end{aligned} $$
             
             Consider now the partial derivative of the activated output of layer $L$, with respect to the non-activated output; that is,
@@ -181,9 +181,9 @@
             Firstly note that
             
             $$ \begin{aligned}
-            \frac{\partial J(\theta)}{\partial a^{(L)}_j}
-            &= \frac{\partial}{\partial a^{(L)}_j} \left( - \sum_{k=0}^{n_L} y_k \log(a^{(L)}_k) \right) \\
-            &= - \frac{y_j}{a^{(L)}_j}
+            \frac{\partial J(\theta)}{\partial a^{(L)}_i}
+            &= \frac{\partial}{\partial a^{(L)}_i} \left( - \sum_{k=0}^{n_L} y_k \log(a^{(L)}_k) \right) \\
+            &= - \frac{y_i}{a^{(L)}_i}
             \end{aligned} $$
             
             
@@ -238,31 +238,103 @@
         \end{proof}
         
         
-
-
-        
-        Now
-        
-        
+        % TODO wording!!!
+        Now define recursively... for $l = 0, \ldots, L-1$
         
         $$
-        \delta^{(l)} :=
+        \delta^{(l)} =
         \delta^{(l+1)} \
         \frac{\partial \mathbf{z}^{(l+1)}}{\partial \mathbf{a}^{(l)}} \
         \frac{\partial \mathbf{a}^{(l)}}{\partial \mathbf{z}^{(l)}} \
         $$
         
         
+        \begin{lemma}
+            
+            $$
+            \frac{\partial \mathbf{a}^{(l)}}{\partial \mathbf{z}^{(l)}} = \textnormal{diag} \left( \sigma'(\mathbf{z}^{(l)}) \right) = \left( \begin{array}{ccc}
+            \sigma'(z^{(l)}_0) & & 0 \\
+            & \ddots &  \\
+            0 & & \sigma'(z^{(l)}_{n_l}) \\
+            \end{array} \right)
+            $$
+            
+        \end{lemma}
+    
+        \begin{proof}
         
-        $$
-        \delta^{(l)} :=
-            \delta^{(l+1)} \
-            \frac{\partial \mathbf{z}^{(l+1)}}{\partial \mathbf{a}^{(l)}} \
-            \frac{\partial \mathbf{a}^{(l)}}{\partial \mathbf{z}^{(l)}} \
-        $$
+            Since $a^{(l)}_i = \sigma(z^{(l)}_i)$, we have
+            
+            $$
+            \frac{\partial a^{(l)}_i}{\partial z^{(l)}_j} = \frac{\partial \sigma(z^{(l)}_i)}{\partial z^{(l)}_j} = \begin{cases}
+                0 & i \neq j \\
+                \sigma'(z^{(l)}_j) & i = j
+            \end{cases}
+            $$
+        
+        \end{proof}
         
         
         
+        \begin{lemma}
+            
+            $$
+            \frac{\partial \mathbf{z}^{(l)}}{\partial \mathbf{a}^{(l-1)}} = \theta^{(l-1)}
+            $$
+            
+        \end{lemma}
+        
+        \begin{proof}
+            
+            By the definition of $z^{(l)}_i$, we have
+            
+            $$ \begin{aligned}
+            \frac{\partial z^{(l)}_i}{\partial a^{(l-1)}_j}
+            &= \frac{\partial}{\partial a^{(l-1)}_j} \left( \sum_{k = 1}^{n_{l-1}} a^{(l-1)}_k \theta^{(l-1)}_{i,k} \right) \\
+            &= \theta^{(l-1)}_{i,j}
+            \end{aligned} $$
+            
+        \end{proof}
+        
+        
+        
+        
+        \begin{lemma}
+            
+            $$
+            \frac{\partial \mathbf{z}^{(l)}}{\partial \theta^{(l-1)}_{i,j}} = \begin{pmatrix} \vdots \\ a^{(l-1)}_j \\ \vdots \end{pmatrix} \in \mathbb{R}^{n_l}
+            $$
+        
+        \end{lemma}
+        
+        \begin{proof}
+            
+            Using the definition of $\mathbf{z}^{(l)}$,
+            
+            $$ \begin{aligned}
+            \frac{\partial z^{(l)}_i}{\partial \theta^{(l-1)}_{i,j}}
+            &= \frac{\partial}{\partial \theta^{(l-1)}_{i,j}} \left( \sum_{k = 0}^{n_{l-1}} \theta^{(l-1)}_{i,k} a^{(l-1)}_j \right) \\
+            &= \sum_{k = 0}^{n_{l-1}} \frac{\partial}{\partial \theta^{(l-1)}_{i,j}} \left( \theta^{(l-1)}_{i,k} a^{(l-1)}_j \right) \\
+            &= a^{(l-1)}_j
+            \end{aligned} $$
+            
+            since the only non-zero term in the summation is for $k = j$. Note that this is independent of $i$, and therefore
+            
+            $$
+            \frac{\partial \mathbf{z}^{(l)}}{\partial \theta^{(l-1)}_{i,j}} = \begin{pmatrix} \vdots \\ a^{(l-1)}_j \\ \vdots \end{pmatrix} \in \mathbb{R}^{n_l}
+            $$
+            
+        \end{proof}
+        
+        
+        
+        
+        \begin{theorem}
+            
+            $$
+            \frac{\partial J}{\partial \theta^{(l)}} = \delta^{(l)}_j
+            $$
+        \end{theorem}
         
         
         
