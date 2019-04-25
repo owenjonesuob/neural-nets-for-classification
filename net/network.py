@@ -48,8 +48,13 @@ class Network(object):
         m = data.shape[0]
         preds = self.predict(data, classes=False)
         
-        cost = (-1/m) * (np.log(preds) * np.eye(self.output_size)[:, labels].T +
-                         np.log(1-preds) * (1 - np.eye(self.output_size)[:, labels]).T).sum()
+        if self.layers[-1].activation_name == "sigmoid":
+            cost = (-1/m) * (np.log(preds) * np.eye(self.output_size)[:, labels].T +
+                             np.log(1-preds) * (1 - np.eye(self.output_size)[:, labels]).T).sum()
+        elif self.layers[-1].activation_name == "softmax":
+            cost = (-1/m) * (np.log(preds) * np.eye(self.output_size)[:, labels].T).sum()
+        else:
+            raise ValueError("Final layer must use softmax or sigmoid activation function")
         
         # Add regularisation
         cost = cost + (penalty/m) * sum([(layer.weights**2).sum() for layer in self.layers])
