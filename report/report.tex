@@ -1,12 +1,13 @@
 \documentclass{article}[11pt]
 \usepackage{arxiv}
+\usepackage{url}
 
 \usepackage{amssymb, amsmath}
 \usepackage{amsthm}
 \newtheorem{lemma}{Lemma}
 \newtheorem{theorem}{Theorem}
 
-\setlength{\jot}{15pt}
+\setlength{\jot}{12pt}
 
 \usepackage{graphicx}
 \graphicspath{graphics/}
@@ -46,6 +47,14 @@
     \subsection{The Cost Function}
 
     \subsection{Regularisation}
+    
+    \subsection{Training}
+    
+    % TODO
+    Hyperparams
+    Variable learning rate
+    Validation set
+    Early stopping
 
 
 
@@ -59,8 +68,9 @@
         
         
         $$ \begin{aligned}
-        J(\theta) &= - \sum_{k=0}^{n} \left( y_k \log(a^{(L)}_k) + (1 - y_k) \log(1 - a^{(L)}_k) \right) \\
-            &= -\mathbf{y}^\top \log(\mathbf{a}^{(L)}) - (\mathbf{1}-\mathbf{y})^\top \log(\mathbf{1} - \mathbf{a}^{(L)})
+        J(\theta)
+        &= - \sum_{k=0}^{n} \left( y_k \log(a^{(L)}_k) + (1 - y_k) \log(1 - a^{(L)}_k) \right) \\
+        &= -\mathbf{y}^\top \log(\mathbf{a}^{(L)}) - (\mathbf{1}-\mathbf{y})^\top \log(\mathbf{1} - \mathbf{a}^{(L)})
         \end{aligned} $$
         
         
@@ -93,13 +103,15 @@
         
         The $j$th component of this error vector is a measure of the sensitivity of the cost function $J(\theta)$ to the (weighted) input from neuron $j$ in layer $l$. Although it is \textit{not} a direct measure of how much a particular neuron is at fault for mistakes in the network's eventual output, such an explanation is at least valid intuitively, since all partial derivatives must be zero if the cost function is at a minimum.
         
-        Note that when $J(\theta)$ is the cross entropy cost function, the error in the final layer $L$ can be calculated as follows:
+        % TODO reword this - binary/multiclass?
+        Note that when $J(\theta)$ is the cross-entropy cost function, the error in the final layer $L$ can be calculated as follows:
         
         \begin{lemma}
-            If $\mathbf{a}^{(L)} = \sigma(\mathbf{z}^{(L)})$ is the activated output of the final layer $L$ of the network, where $\sigma$ is either the sigmoid or softmax activation function, then
+            
+            If $J$ is the \textbf{binomial cross-entropy} cost function, and $\sigma$ is the \textbf{sigmoid} activation function, then
             
             $$
-            \mathbf{\delta}^{(L)} = \mathbf{a}^{(L)} - \mathbf{y}
+            \boldsymbol{\delta}^{(L)} = \mathbf{a}^{(L)} - \mathbf{y}
             $$
             
         \end{lemma}
@@ -107,101 +119,127 @@
         
         \begin{proof}
             
-            Firstly, where $\mathbf{y}$ is the expected output of the network, observe that the partial derivative of $J$ with respect to the $j$th component of the activated output $\mathbf{a}^{(L)}$ can be represented as
+            Denoting the expected output of the network as $\mathbf{y}$, observe that the partial derivative of $J$ with respect to the $j$th component of the activated output $\mathbf{a}^{(L)}$ can be represented as
                     
             $$ \begin{aligned}
             \frac{\partial J(\theta)}{\partial a^{(L)}_j}
-            &= \frac{\partial}{\partial a^{(L)}_i} \left( - \sum_{k=0}^{n_L} \left( y_k \log(a^{(L)}_k) + (1 - y_k) \log(1 - a^{(L)}_k) \right) \right) \\
+            &= \frac{\partial}{\partial a^{(L)}_j} \left( - \sum_{k=0}^{n_L} \left( y_k \log(a^{(L)}_k) + (1 - y_k) \log(1 - a^{(L)}_k) \right) \right) \\
             &= - \frac{y_j}{a^{(L)}_j} + \frac{1 - y_j}{1 - a^{(L)}_j}
             \end{aligned} $$
             
             Consider now the partial derivative of the activated output of layer $L$, with respect to the non-activated output; that is,
             
-            $$
-            \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} = \frac{\partial}{\partial z^{(L)}_j} \left( \sigma(z^{(L)}_j) \right)
-            $$
+            $$ \begin{aligned}
+            \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j}
+            &= \frac{\partial}{\partial z^{(L)}_j} \left( \sigma(z^{(L)}_j) \right)
+            &= \frac{\partial}{\partial z^{(L)}_j} \left( \frac{1}{1 + e^{-z^{(L)}_i}} \right)
+            \end{aligned} $$
+                
+            Note that if $i \neq j$ then this is clearly zero. If $i = j$,
             
-             
-            \begin{itemize}
-                
-                \item When $\sigma$ is the sigmoid activation function,
+            $$ \begin{aligned}
+            \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j}
+            &= \left( - e^{-z^{(L)}_j} \right) \left( - \left( 1 + e^{-z^{(L)}_j} \right)^{-2} \right) \\
+            &= \frac{e^{-z^{(L)}_j}}{\left( 1 + e^{-z^{(L)}_j} \right) \left( 1 + e^{-z^{(L)}_j} \right)} \\
+            &= \left( \frac{1}{1 + e^{-z^{(L)}_j}} \right) \left( \frac{\left( 1 + e^{-z^{(L)}_j} \right) - 1}{1 + e^{-z^{(L)}_j}} \right) \\
+            &= \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right) \\
+            &= a^{(L)}_j \left( 1 - a^{(L)}_j \right)
+            \end{aligned} $$
             
-                $$
-                \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} = \frac{\partial}{\partial z^{(L)}_j} \left( \frac{1}{1 + e^{-z^{(L)}_i}} \right)
-                $$
-                
-                Note that if $i \neq j$ then this is clearly zero. If $i = j$,
-                
-                $$ \begin{aligned}
-                \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j}
-                &= \left( - e^{-z^{(L)}_j} \right) \left( - \left( 1 + e^{-z^{(L)}_j} \right)^{-2} \right) \\
-                &= \frac{e^{-z^{(L)}_j}}{\left( 1 + e^{-z^{(L)}_j} \right) \left( 1 + e^{-z^{(L)}_j} \right)} \\
-                &= \left( \frac{1}{1 + e^{-z^{(L)}_j}} \right) \left( \frac{\left( 1 + e^{-z^{(L)}_j} \right) - 1}{1 + e^{-z^{(L)}_j}} \right) \\
-                &= \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right)
-                \end{aligned} $$
-                
-            
-            
-                \item When $\sigma$ is the softmax activation function, then using the quotient rule,
-                
-                $$ \begin{aligned}
-                \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j}
-                &= \frac{\partial}{\partial z^{(L)}_j} \left( \frac{e^{z^{(L)}_i}}{\sum_{k=0}^{n_L} e^{z^{(L)}_k}} \right) \\
-                &= \frac{\left( \frac{\partial \left( e^{z^{(L)}_i}\right)}{\partial z^{(L)}_j} \cdot \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right) - e^{z^{(L)}_i} e^{z^{(L)}_j}}{\left( \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right)^2}
-                \end{aligned} $$
-                
-                
-                If $i \neq j$,
-               
-                $$ \begin{aligned}
-                \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j}
-                &= \frac{0 - e^{z_i} e^{z_j}}{\left( \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right)^2} \\
-                &= - \sigma(z_i) \sigma(z_j)
-                \end{aligned} $$
-                
-                On the other hand, if $i = j$,
-                
-                $$ \begin{aligned}
-                \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j}
-                &= \frac{\left( e^{z^{(L)}_j} \cdot \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right) - \left( e^{z^{(L)}_j} \right)^2}{\left( \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right)^2} \\
-                &= \frac{e^{z^{(L)}_j}}{\sum_{k=0}^{n_L} e^{z^{(L)}_k}} \left( 1 - \frac{e^{z^{(L)}_j}}{\sum_{k=0}^{n_L} e^{z^{(L)}_k}} \right) \\
-                &= \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right)
-                \end{aligned} $$
-                
-            \end{itemize}
-            
-            Therefore in both cases, we have that $\frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} = \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right)$.
-            
-            Now using the definition of $\mathbf{\delta}^{(L)}$ and the chain rule, and combining the two previous results,
+            Now using the definition of $\boldsymbol{\delta}^{(L)}$ and the chain rule,
             
             $$ \begin{aligned}
             \delta^{(L)}_j &= \frac{\partial J(\theta)}{\partial z^{(L)}_j} \\
             &= \sum_{i = 0}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
-            &= \left( - \frac{y_j}{a^{(L)}_j} + \frac{1 - y_j}{1 - a^{(L)}_j} \right) \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right)
-            \end{aligned} $$
-            
-            Then recalling that $\sigma(z^{(L)}_j) = a^{(L)}_j$ by definition,
-            
-            $$ \begin{aligned}
-            \delta^{(L)}_j &= \left( - \frac{y_j}{a^{(L)}_j} + \frac{1 - y_j}{1 - a^{(L)}_j} \right) a^{(L)}_j \left( 1 - a^{(L)}_j \right) \\
+            &= \frac{\partial J(\theta)}{\partial a^{(L)}_j} \ \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} + \sum_{\substack{i = 0 \\ i \neq j}}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
+            &= \frac{\partial J(\theta)}{\partial a^{(L)}_j} \ \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} + 0 \\
+            &= \left( - \frac{y_j}{a^{(L)}_j} + \frac{1 - y_j}{1 - a^{(L)}_j} \right) a^{(L)}_j \left( 1 - a^{(L)}_j \right) \\
             &= a^{(L)}_j (1 - y_j) - y_j (1 - a^{(L)}_j) \\
             &= a^{(L)}_j - y_j
             \end{aligned} $$
             
-            % TODO this is fine for sigmoid, but not softmax
-    
-    
-    
         \end{proof}
-
-
-
-% TODO incorporate this for softmax?
-
-$$ \begin{cases}
-\left( - \frac{y_j}{a^{(L)}_j} + \frac{1 - y_j}{1 - a^{(L)}_j} \right) \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right) + \sum_{i=0}^{n_L} \left( \left( - \frac{y_i}{a^{(L)}_i} + \frac{1 - y_i}{1 - a^{(L)}_i} \right) \left( - \sigma(z_i) \sigma(z_j) \right) \right) & \text{for softmax activation}
-\end{cases}$$
         
+        
+        % TODO word nicely
+        We now complete a similar proof for the softmax case.
+        
+        
+        \begin{lemma}
+            
+            If $J$ is the \textbf{multiclass cross-entropy} cost function, and $\sigma$ is the \textbf{softmax} activation function, then
+            
+            $$
+            \boldsymbol{\delta}^{(L)} = \mathbf{a}^{(L)} - \mathbf{y}
+            $$
+            
+        \end{lemma}
+        
+        
+        \begin{proof}
+            
+            Firstly note that
+            
+            $$ \begin{aligned}
+            \frac{\partial J(\theta)}{\partial a^{(L)}_j}
+            &= \frac{\partial}{\partial a^{(L)}_j} \left( - \sum_{k=0}^{n_L} y_k \log(a^{(L)}_k) \right) \\
+            &= - \frac{y_j}{a^{(L)}_j}
+            \end{aligned} $$
+            
+            
+            Then using the quotient rule,
+            
+            $$ \begin{aligned}
+            \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j}
+            &= \frac{\partial}{\partial z^{(L)}_j} \left( \frac{e^{z^{(L)}_i}}{\sum_{k=0}^{n_L} e^{z^{(L)}_k}} \right) \\
+            &= \frac{\left( \frac{\partial \left( e^{z^{(L)}_i}\right)}{\partial z^{(L)}_j} \cdot \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right) - e^{z^{(L)}_i} e^{z^{(L)}_j}}{\left( \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right)^2}
+            \end{aligned} $$
+            
+            \begin{itemize}
+            
+                \item If $i \neq j$,
+            
+                $$ \begin{aligned}
+                \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j}
+                &= \frac{0 - e^{z_i} e^{z_j}}{\left( \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right)^2} \\
+                &= - \sigma(z_i) \sigma(z_j) \\
+                &= - a^{(L)}_i a^{(L)}_j
+                \end{aligned} $$
+            
+                \item On the other hand, if $i = j$,
+            
+                $$ \begin{aligned}
+                \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j}
+                &= \frac{\left( e^{z^{(L)}_j} \cdot \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right) - \left( e^{z^{(L)}_j} \right)^2}{\left( \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right)^2} \\
+                &= \frac{e^{z^{(L)}_j}}{\sum_{k=0}^{n_L} e^{z^{(L)}_k}} \left( 1 - \frac{e^{z^{(L)}_j}}{\sum_{k=0}^{n_L} e^{z^{(L)}_k}} \right) \\
+                &= \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right) \\
+                &= a^{(L)}_j \left( 1 - a^{(L)}_j \right)
+                \end{aligned} $$
+            
+            \end{itemize}
+            
+            Then once again using the definition of $\boldsymbol{\delta}^{(L)}$ and the chain rule, observe that
+            
+            $$ \begin{aligned}
+            \delta^{(L)}_j &= \frac{\partial J(\theta)}{\partial z^{(L)}_j} \\
+            &= \sum_{i = 0}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
+            &= \frac{\partial J(\theta)}{\partial a^{(L)}_j} \ \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} + \sum_{\substack{i = 0 \\ i \neq j}}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
+            &= - \frac{y_j}{a^{(L)}_j} \left( a^{(L)}_j (1 - a^{(L)}_j) \right) + \sum_{\substack{i = 0 \\ i \neq j}}^{n_L} \left( - \frac{y_i}{a^{(L)}_i} \left(- a^{(L)}_i a^{(L)}_j \right) \right) \\
+            &= - y_j (1 - a^{(L)}_j) + a^{(L)}_j \left( \sum_{i = 0}^{n_L} \left( y_i \right) - y_j \right)
+            \end{aligned} $$
+            
+            This looks slightly complicated, but recall that $\mathbf{y}$ is a one-hot encoded vector, and therefore $\sum_{i = 0}^{n_L} y_i = 1$. Hence we have
+            
+            $$ \begin{aligned}
+            \delta^{(L)}_j &= - y_j (1 - a^{(L)}_j) + a^{(L)}_j (1 - y_j) \\
+            &= a^{(L)}_j - y_j
+            \end{aligned} $$
+            
+        \end{proof}
+        
+        
+
+
         
         Now
         
@@ -240,7 +278,15 @@ $$ \begin{cases}
     \subsection{Binary Classification}
     
     \subsection{Multiclass Classification}
-    
+        
+        % TODO explain why we are only looking at net here, and not logreg
+        Although logistic regression is limited to producing a binary output, 
+        
+        
+        
+        For the remainder of this section we will consider the Kuzushiji-MNIST (KMNIST) dataset \cite{kmnist}. 
+        
+        KMNIST is designed as a drop-in replacement for the infamous MNIST dataset of handwritten numeric digits, and therefore is identical in structure to MNIST: each observation is a single 28x28 matrix, where each element represents an "intensity" on a scale of 0 (white) to 1 (black), and therefore when visualised as a matrix plot
 
 
 
