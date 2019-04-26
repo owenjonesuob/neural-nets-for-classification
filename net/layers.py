@@ -20,7 +20,7 @@ class Layer(object):
             "none": lambda z: np.ones(z.shape),
             "relu": lambda z: np.heaviside(z, 1),
             "sigmoid": lambda z: activations["sigmoid"](z) * (1 - activations["sigmoid"](z)),
-            "softmax": lambda z: activations["softmax"](z) * (1 - activations["softmax"](z))
+            "softmax": lambda z: np.diag(activations["softmax"](z)) - np.outer(activations["softmax"](z), activations["softmax"](z))
         }
         
         self.activation_name = activation
