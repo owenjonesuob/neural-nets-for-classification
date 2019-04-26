@@ -80,10 +80,10 @@ utils.plot_boundaries(model, X, y, subdivs=150)
 
 model.reset()
 success = model.train(X_train, y_train, X_val, y_val, epochs=10000, batch_size=128, learning_rate=10, penalty=0)
-utils.plot_cost_curves(model, val_curve=False)
+utils.plot_cost_curves(model)
 utils.plot_boundaries(model, X, y, subdivs=150)
 
 model.reset()
 success = model.train(X_train, y_train, X_val, y_val, epochs=10000, batch_size=128, learning_rate=10, penalty=0.1)
-utils.plot_cost_curves(model, val_curve=False)
+utils.plot_cost_curves(model)
 utils.plot_boundaries(model, X, y, subdivs=150)
