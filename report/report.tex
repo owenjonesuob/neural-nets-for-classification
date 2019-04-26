@@ -259,7 +259,7 @@
                 \sigma'(z^{(l)}_j) & i = j
             \end{cases}
             $$
-
+            
         \end{lemma}
     
         \begin{proof}
@@ -300,23 +300,25 @@
             For all $i = 1, \ \ldots, \ n_l$ and all $j = 1, \ \ldots, \ n_{l-1}$,
             
             $$
-            \frac{\partial z^{(l)}_i}{\partial \theta^{(l-1)}_{i,j}} = a^{(l-1)}_j
+            \frac{\partial z^{(l)}_p}{\partial \theta^{(l-1)}_{i,j}} = \begin{cases}
+                0 & p \neq i \\
+                a^{(l-1)}_j & p = i
+            \end{cases}
             $$
-        
+            
         \end{lemma}
         
         \begin{proof}
             
-            Using the definition of $z^{(l)}_i$,
+            Using the definition of $z^{(l)}_p$,
             
             $$ \begin{aligned}
-            \frac{\partial z^{(l)}_i}{\partial \theta^{(l-1)}_{i,j}}
-            &= \frac{\partial}{\partial \theta^{(l-1)}_{i,j}} \left( \sum_{k=1}^{n_{l-1}} \theta^{(l-1)}_{i,k} a^{(l-1)}_j \right) \\
-            &= \sum_{k=1}^{n_{l-1}} \frac{\partial}{\partial \theta^{(l-1)}_{i,j}} \left( \theta^{(l-1)}_{i,k} a^{(l-1)}_j \right) \\
-            &= a^{(l-1)}_j
+            \frac{\partial z^{(l)}_p}{\partial \theta^{(l-1)}_{i,j}}
+            &= \frac{\partial}{\partial \theta^{(l-1)}_{i,j}} \left( \sum_{k=1}^{n_{l-1}} \theta^{(l-1)}_{p,k} a^{(l-1)}_k \right) \\
+            &= \sum_{k=1}^{n_{l-1}} \frac{\partial}{\partial \theta^{(l-1)}_{i,j}} \left( \theta^{(l-1)}_{p,k} a^{(l-1)}_k \right)
             \end{aligned} $$
             
-            since the only non-zero term in the summation is for $k = j$. Note in particular that this is independent of $i$.
+            The result follows by noting that all terms in the summation, or all-but-one terms if $p = i$, are zero.
             
         \end{proof}
         
@@ -333,13 +335,13 @@
         
         \begin{proof}
         
-            Using the chain rule and the results from the previous lemmas,
+            Using the chain rule, the definition of $\boldsymbol{\delta}^{(l)}$ and the results from the previous lemmas,
             
             $$ \begin{aligned}
             \frac{\partial J}{\partial \theta^{(l-1)}_{i,j}}
             &= \sum_{k=1}^{n_l} \left( \frac{\partial J(\theta)}{\partial z^{(l)}_k} \ \frac{\partial z^{(l)}_k}{\partial \theta^{(l-1)}_{i,j}} \right) \\
-            &= \sum_{k=1}^{n_l} \left( \delta^{(l)}_k a^{(l-1)}_j \right) \\
-            &= 
+            &= \sum_{k=1}^{n_l} \left( \delta^{(l)}_k \frac{\partial z^{(l)}_k}{\partial \theta^{(l-1)}_{i,j}} \right) \\
+            &= \delta^{(l)}_i a^{(l-1)}_j
             \end{aligned}$$
         
         \end{proof}
