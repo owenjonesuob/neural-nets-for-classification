@@ -69,7 +69,7 @@
         
         $$ \begin{aligned}
         J(\theta)
-        &= - \sum_{k=0}^{n} \left( y_k \log(a^{(L)}_k) + (1 - y_k) \log(1 - a^{(L)}_k) \right) \\
+        &= - \sum_{k=1}^{n} \left( y_k \log(a^{(L)}_k) + (1 - y_k) \log(1 - a^{(L)}_k) \right) \\
         &= -\mathbf{y}^\top \log(\mathbf{a}^{(L)}) - (\mathbf{1}-\mathbf{y})^\top \log(\mathbf{1} - \mathbf{a}^{(L)})
         \end{aligned} $$
         
@@ -103,15 +103,28 @@
         
         The $j$th component of this error vector is a measure of the sensitivity of the cost function $J(\theta)$ to the (weighted) input from neuron $j$ in layer $l$. Although it is \textit{not} a direct measure of how much a particular neuron is at fault for mistakes in the network's eventual output, such an explanation is at least valid intuitively, since all partial derivatives must be zero if the cost function is at a minimum.
         
+        
+        % TODO wording!!!
+        Now define recursively... for $l = 1, \ldots, L-1$
+        
+        $$
+        \delta^{(l)} =
+        \delta^{(l+1)} \
+        \frac{\partial \mathbf{z}^{(l+1)}}{\partial \mathbf{a}^{(l)}} \
+        \frac{\partial \mathbf{a}^{(l)}}{\partial \mathbf{z}^{(l)}} \
+        $$
+        
+        
+        
         % TODO reword this - binary/multiclass?
         Note that when $J(\theta)$ is the cross-entropy cost function, the error in the final layer $L$ can be calculated as follows:
         
         \begin{lemma}
             
-            If $J$ is the \textbf{binomial cross-entropy} cost function, and $\sigma$ is the \textbf{sigmoid} activation function, then
+            If $J$ is the \textbf{binomial cross-entropy} cost function, and $\sigma$ is the \textbf{sigmoid} activation function, then for all $j = 1, \ \ldots, \ n_L$
             
             $$
-            \boldsymbol{\delta}^{(L)} = \mathbf{a}^{(L)} - \mathbf{y}
+            \delta^{(L)}_j = a^{(L)}_j - y_j
             $$
             
         \end{lemma}
@@ -119,11 +132,11 @@
         
         \begin{proof}
             
-            Denoting the expected output of the network as $\mathbf{y}$, observe that the partial derivative of $J$ with respect to the $j$th component of the activated output $\mathbf{a}^{(L)}$ can be represented as
+            Observe that the partial derivative of $J$ with respect to $a^{(L)}_j$ (the $j$th component of the activated output $\mathbf{a}^{(L)}$) can be represented as
                     
             $$ \begin{aligned}
             \frac{\partial J(\theta)}{\partial a^{(L)}_i}
-            &= \frac{\partial}{\partial a^{(L)}_i} \left( - \sum_{k=0}^{n_L} \left( y_k \log(a^{(L)}_k) + (1 - y_k) \log(1 - a^{(L)}_k) \right) \right) \\
+            &= \frac{\partial}{\partial a^{(L)}_i} \left( - \sum_{k=1}^{n_L} \left( y_k \log(a^{(L)}_k) + (1 - y_k) \log(1 - a^{(L)}_k) \right) \right) \\
             &= - \frac{y_i}{a^{(L)}_i} + \frac{1 - y_i}{1 - a^{(L)}_i}
             \end{aligned} $$
             
@@ -150,8 +163,8 @@
             
             $$ \begin{aligned}
             \delta^{(L)}_j &= \frac{\partial J(\theta)}{\partial z^{(L)}_j} \\
-            &= \sum_{i = 0}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
-            &= \frac{\partial J(\theta)}{\partial a^{(L)}_j} \ \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} + \sum_{\substack{i = 0 \\ i \neq j}}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
+            &= \sum_{i=1}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
+            &= \frac{\partial J(\theta)}{\partial a^{(L)}_j} \ \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} + \sum_{\substack{i=1 \\ i \neq j}}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
             &= \frac{\partial J(\theta)}{\partial a^{(L)}_j} \ \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} + 0 \\
             &= \left( - \frac{y_j}{a^{(L)}_j} + \frac{1 - y_j}{1 - a^{(L)}_j} \right) a^{(L)}_j \left( 1 - a^{(L)}_j \right) \\
             &= a^{(L)}_j (1 - y_j) - y_j (1 - a^{(L)}_j) \\
@@ -167,10 +180,10 @@
         
         \begin{lemma}
             
-            If $J$ is the \textbf{multiclass cross-entropy} cost function, and $\sigma$ is the \textbf{softmax} activation function, then
+            If $J$ is the \textbf{multiclass cross-entropy} cost function, and $\sigma$ is the \textbf{softmax} activation function, then for all $j = 1, \ \ldots, \ n_L$
             
             $$
-            \boldsymbol{\delta}^{(L)} = \mathbf{a}^{(L)} - \mathbf{y}
+            \delta^{(L)}_j = a^{(L)}_j - y_j
             $$
             
         \end{lemma}
@@ -182,7 +195,7 @@
             
             $$ \begin{aligned}
             \frac{\partial J(\theta)}{\partial a^{(L)}_i}
-            &= \frac{\partial}{\partial a^{(L)}_i} \left( - \sum_{k=0}^{n_L} y_k \log(a^{(L)}_k) \right) \\
+            &= \frac{\partial}{\partial a^{(L)}_i} \left( - \sum_{k=1}^{n_L} y_k \log(a^{(L)}_k) \right) \\
             &= - \frac{y_i}{a^{(L)}_i}
             \end{aligned} $$
             
@@ -191,8 +204,8 @@
             
             $$ \begin{aligned}
             \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j}
-            &= \frac{\partial}{\partial z^{(L)}_j} \left( \frac{e^{z^{(L)}_i}}{\sum_{k=0}^{n_L} e^{z^{(L)}_k}} \right) \\
-            &= \frac{\left( \frac{\partial \left( e^{z^{(L)}_i}\right)}{\partial z^{(L)}_j} \cdot \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right) - e^{z^{(L)}_i} e^{z^{(L)}_j}}{\left( \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right)^2}
+            &= \frac{\partial}{\partial z^{(L)}_j} \left( \frac{e^{z^{(L)}_i}}{\sum_{k=1}^{n_L} e^{z^{(L)}_k}} \right) \\
+            &= \frac{\left( \frac{\partial \left( e^{z^{(L)}_i}\right)}{\partial z^{(L)}_j} \cdot \sum_{k=1}^{n_L} e^{z^{(L)}_k} \right) - e^{z^{(L)}_i} e^{z^{(L)}_j}}{\left( \sum_{k=1}^{n_L} e^{z^{(L)}_k} \right)^2}
             \end{aligned} $$
             
             \begin{itemize}
@@ -201,7 +214,7 @@
             
                 $$ \begin{aligned}
                 \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j}
-                &= \frac{0 - e^{z_i} e^{z_j}}{\left( \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right)^2} \\
+                &= \frac{0 - e^{z_i} e^{z_j}}{\left( \sum_{k=1}^{n_L} e^{z^{(L)}_k} \right)^2} \\
                 &= - \sigma(z_i) \sigma(z_j) \\
                 &= - a^{(L)}_i a^{(L)}_j
                 \end{aligned} $$
@@ -210,25 +223,25 @@
             
                 $$ \begin{aligned}
                 \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j}
-                &= \frac{\left( e^{z^{(L)}_j} \cdot \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right) - \left( e^{z^{(L)}_j} \right)^2}{\left( \sum_{k=0}^{n_L} e^{z^{(L)}_k} \right)^2} \\
-                &= \frac{e^{z^{(L)}_j}}{\sum_{k=0}^{n_L} e^{z^{(L)}_k}} \left( 1 - \frac{e^{z^{(L)}_j}}{\sum_{k=0}^{n_L} e^{z^{(L)}_k}} \right) \\
+                &= \frac{\left( e^{z^{(L)}_j} \cdot \sum_{k=1}^{n_L} e^{z^{(L)}_k} \right) - \left( e^{z^{(L)}_j} \right)^2}{\left( \sum_{k=1}^{n_L} e^{z^{(L)}_k} \right)^2} \\
+                &= \frac{e^{z^{(L)}_j}}{\sum_{k=1}^{n_L} e^{z^{(L)}_k}} \left( 1 - \frac{e^{z^{(L)}_j}}{\sum_{k=1}^{n_L} e^{z^{(L)}_k}} \right) \\
                 &= \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right) \\
                 &= a^{(L)}_j \left( 1 - a^{(L)}_j \right)
                 \end{aligned} $$
             
             \end{itemize}
             
-            Then once again using the definition of $\boldsymbol{\delta}^{(L)}$ and the chain rule, observe that
+            Now once again using the definition of $\boldsymbol{\delta}^{(L)}$ and the chain rule, observe that
             
             $$ \begin{aligned}
             \delta^{(L)}_j &= \frac{\partial J(\theta)}{\partial z^{(L)}_j} \\
-            &= \sum_{i = 0}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
-            &= \frac{\partial J(\theta)}{\partial a^{(L)}_j} \ \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} + \sum_{\substack{i = 0 \\ i \neq j}}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
-            &= - \frac{y_j}{a^{(L)}_j} \left( a^{(L)}_j (1 - a^{(L)}_j) \right) + \sum_{\substack{i = 0 \\ i \neq j}}^{n_L} \left( - \frac{y_i}{a^{(L)}_i} \left(- a^{(L)}_i a^{(L)}_j \right) \right) \\
-            &= - y_j (1 - a^{(L)}_j) + a^{(L)}_j \left( \sum_{i = 0}^{n_L} \left( y_i \right) - y_j \right)
+            &= \sum_{i=1}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
+            &= \frac{\partial J(\theta)}{\partial a^{(L)}_j} \ \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} + \sum_{\substack{i=1 \\ i \neq j}}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
+            &= - \frac{y_j}{a^{(L)}_j} \left( a^{(L)}_j (1 - a^{(L)}_j) \right) + \sum_{\substack{i=1 \\ i \neq j}}^{n_L} \left( - \frac{y_i}{a^{(L)}_i} \left(- a^{(L)}_i a^{(L)}_j \right) \right) \\
+            &= - y_j (1 - a^{(L)}_j) + a^{(L)}_j \left( \sum_{i=1}^{n_L} \left( y_i \right) - y_j \right)
             \end{aligned} $$
             
-            This looks slightly complicated, but recall that $\mathbf{y}$ is a one-hot encoded vector, and therefore $\sum_{i = 0}^{n_L} y_i = 1$. Hence we have
+            This looks slightly complicated, but recall that $\mathbf{y}$ is a one-hot encoded vector, and therefore $\sum_{=1}^{n_L} y_i = 1$. Hence we have
             
             $$ \begin{aligned}
             \delta^{(L)}_j &= - y_j (1 - a^{(L)}_j) + a^{(L)}_j (1 - y_j) \\
@@ -238,48 +251,31 @@
         \end{proof}
         
         
-        % TODO wording!!!
-        Now define recursively... for $l = 0, \ldots, L-1$
-        
-        $$
-        \delta^{(l)} =
-        \delta^{(l+1)} \
-        \frac{\partial \mathbf{z}^{(l+1)}}{\partial \mathbf{a}^{(l)}} \
-        \frac{\partial \mathbf{a}^{(l)}}{\partial \mathbf{z}^{(l)}} \
-        $$
-        
-        
-        \begin{lemma}
+        \begin{lemma} For all $i = 1, \ \ldots, \ n_l$ and all $j = 1, \ \ldots, \ n_l$,
             
             $$
-            \frac{\partial \mathbf{a}^{(l)}}{\partial \mathbf{z}^{(l)}} = \textnormal{diag} \left( \sigma'(\mathbf{z}^{(l)}) \right) = \left( \begin{array}{ccc}
-            \sigma'(z^{(l)}_0) & & 0 \\
-            & \ddots &  \\
-            0 & & \sigma'(z^{(l)}_{n_l}) \\
-            \end{array} \right)
-            $$
-            
-        \end{lemma}
-    
-        \begin{proof}
-        
-            Since $a^{(l)}_i = \sigma(z^{(l)}_i)$, we have
-            
-            $$
-            \frac{\partial a^{(l)}_i}{\partial z^{(l)}_j} = \frac{\partial \sigma(z^{(l)}_i)}{\partial z^{(l)}_j} = \begin{cases}
+            \frac{\partial a^{(l)}_i}{\partial z^{(l)}_j} = \begin{cases}
                 0 & i \neq j \\
                 \sigma'(z^{(l)}_j) & i = j
             \end{cases}
             $$
+
+        \end{lemma}
+    
+        \begin{proof}
+        
+            Immediate, since $a^{(l)}_i = \sigma(z^{(l)}_i)$.
         
         \end{proof}
-        
+    
         
         
         \begin{lemma}
             
+            For all $i = 1, \ \ldots, \ n_l$ and all $j = 1, \ \ldots, \ n_{l-1}$,
+            
             $$
-            \frac{\partial \mathbf{z}^{(l)}}{\partial \mathbf{a}^{(l-1)}} = \theta^{(l-1)}
+            \frac{\partial z^{(l)}_i}{\partial a^{(l-1)}_j} = \theta^{(l-1)}_{i,j}
             $$
             
         \end{lemma}
@@ -301,28 +297,26 @@
         
         \begin{lemma}
             
+            For all $i = 1, \ \ldots, \ n_l$ and all $j = 1, \ \ldots, \ n_{l-1}$,
+            
             $$
-            \frac{\partial \mathbf{z}^{(l)}}{\partial \theta^{(l-1)}_{i,j}} = \begin{pmatrix} \vdots \\ a^{(l-1)}_j \\ \vdots \end{pmatrix} \in \mathbb{R}^{n_l}
+            \frac{\partial z^{(l)}_i}{\partial \theta^{(l-1)}_{i,j}} = a^{(l-1)}_j
             $$
         
         \end{lemma}
         
         \begin{proof}
             
-            Using the definition of $\mathbf{z}^{(l)}$,
+            Using the definition of $z^{(l)}_i$,
             
             $$ \begin{aligned}
             \frac{\partial z^{(l)}_i}{\partial \theta^{(l-1)}_{i,j}}
-            &= \frac{\partial}{\partial \theta^{(l-1)}_{i,j}} \left( \sum_{k = 0}^{n_{l-1}} \theta^{(l-1)}_{i,k} a^{(l-1)}_j \right) \\
-            &= \sum_{k = 0}^{n_{l-1}} \frac{\partial}{\partial \theta^{(l-1)}_{i,j}} \left( \theta^{(l-1)}_{i,k} a^{(l-1)}_j \right) \\
+            &= \frac{\partial}{\partial \theta^{(l-1)}_{i,j}} \left( \sum_{k=1}^{n_{l-1}} \theta^{(l-1)}_{i,k} a^{(l-1)}_j \right) \\
+            &= \sum_{k=1}^{n_{l-1}} \frac{\partial}{\partial \theta^{(l-1)}_{i,j}} \left( \theta^{(l-1)}_{i,k} a^{(l-1)}_j \right) \\
             &= a^{(l-1)}_j
             \end{aligned} $$
             
-            since the only non-zero term in the summation is for $k = j$. Note that this is independent of $i$, and therefore
-            
-            $$
-            \frac{\partial \mathbf{z}^{(l)}}{\partial \theta^{(l-1)}_{i,j}} = \begin{pmatrix} \vdots \\ a^{(l-1)}_j \\ \vdots \end{pmatrix} \in \mathbb{R}^{n_l}
-            $$
+            since the only non-zero term in the summation is for $k = j$. Note in particular that this is independent of $i$.
             
         \end{proof}
         
@@ -332,10 +326,23 @@
         \begin{theorem}
             
             $$
-            \frac{\partial J}{\partial \theta^{(l)}} = \delta^{(l)}_j
+            \frac{\partial J}{\partial \theta^{(l-1)}_{i,j}} = \delta^{(l)}_i a^{(l-1)}_j
             $$
+            
         \end{theorem}
         
+        \begin{proof}
+        
+            Using the chain rule and the results from the previous lemmas,
+            
+            $$ \begin{aligned}
+            \frac{\partial J}{\partial \theta^{(l-1)}_{i,j}}
+            &= \sum_{k=1}^{n_l} \left( \frac{\partial J(\theta)}{\partial z^{(l)}_k} \ \frac{\partial z^{(l)}_k}{\partial \theta^{(l-1)}_{i,j}} \right) \\
+            &= \sum_{k=1}^{n_l} \left( \delta^{(l)}_k a^{(l-1)}_j \right) \\
+            &= 
+            \end{aligned}$$
+        
+        \end{proof}
         
         
 
