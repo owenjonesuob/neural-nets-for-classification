@@ -41,8 +41,8 @@ X_test = utils.scale_minmax(X_test)
 model = Network(layers = [
     Input(784),
     Dense(784, 200, "sigmoid"),
-    Dense(200, 50, "sigmoid"),
-    Dense(50, 10, "softmax")
+    Dense(200, 30, "sigmoid"),
+    Dense(30, 10, "softmax")
 ])
 
 model.reset()
