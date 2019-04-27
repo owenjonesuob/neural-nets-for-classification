@@ -9,8 +9,7 @@ idxs = np.random.choice(60000, 10000, replace=False)
 
 kmnist_imgs = np.load("../data/kmnist-train-imgs.npz")["arr_0"]
 print("kmnist shape:", kmnist_imgs.shape)
-#kmnist_imgs = kmnist_imgs.reshape(-1, 784)[idxs, :]
-kmnist_imgs = utils.scale_minmax(kmnist_imgs.reshape(-1, 784))[idxs, :]
+kmnist_imgs = kmnist_imgs.reshape(-1, 784)[idxs, :]
 print("kmnist reshaped:", kmnist_imgs.shape)
 
 kmnist_labs = np.load("../data/kmnist-train-labels.npz")["arr_0"][idxs]
@@ -29,7 +28,7 @@ for k in range(10):
             idx += 1
     plt.imshow(kmnist_imgs[idx, :].reshape(28, 28), cmap="Greys_r", origin="upper", interpolation="nearest")
     plt.axis("off")
-#plt.show()
+plt.show()
 
 
 X_train, y_train, X_val, y_val, X_test, y_test = make_sets(kmnist_imgs, kmnist_labs, [0.6, 0.2, 0.2])
@@ -88,3 +87,6 @@ for row in range(10):
 plt.show()
 
 
+# Final score
+test_preds = model.predict(X_test)
+print("Test accuracy:", model.get_accuracy(X_test, y_test))
