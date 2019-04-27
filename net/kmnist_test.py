@@ -25,19 +25,11 @@ model = Network(layers = [
     Dense(30, 10, "softmax")
 ])
 
-model.reset()
+model.load_weights("val_weights.npy")
 success = model.train(X_train, y_train, X_val, y_val, epochs=1000, batch_size=256, learning_rate=10, penalty=0.12, early_stopping=30)
 
 
-import matplotlib.pyplot as plt
-
-plt.subplots(5, 5)
-
-for k in range(25):
-    plt.subplot(5, 5, k+1)
-    plt.imshow(model.layers[1].weights[k, 1:].reshape(28, 28), cmap="Greys_r", origin="upper", interpolation="nearest")
-
-plt.show()
+model.save_weights("final_weights.npy")
 
 
 # Final score

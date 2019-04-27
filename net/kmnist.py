@@ -87,6 +87,9 @@ for row in range(10):
 plt.show()
 
 
+model.save_weights("val_weights.npy")
+
+
 # Final score
 test_preds = model.predict(X_test)
 print("Test accuracy:", model.get_accuracy(X_test, y_test))
