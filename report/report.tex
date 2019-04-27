@@ -31,7 +31,7 @@
 
     Historically, machine learning tasks have fallen into one of several categories: supervised learning problems, unsupervised learning problems, and more recently reinforcement learning
     
-    Classification tasks (in the sense which this paper considers) belong to the supervised learning family of tasks, where the training process uses
+    Classification tasks (in the sense which this paper considers) belong to the supervised learning family of tasks, where the data used in the training process is \textit{labelled}
     
     qualitative outputs
     
@@ -40,12 +40,71 @@
 
 \section{Logistic Regression}
 
-    
+    binary output (0 or 1)
 
+
+    \subsection{Linear Regression???}
+        
+        The underlying assumption is always that the output occurs as a result of some combination of inputs.
+        
+        Mathematically speaking, suppose we have an observation $\mathbf{x}$ consisting of $n \geq 1$ inputs:
+        
+        $$
+        \mathbf{x} = (x_1, \ x_2, \ \ldots, \ x_{n-1}, \ x_n) \in \mathbb{R}^n
+        $$
+        
+        Then we assume that there exists a corresponding set of weights $\theta_0, \ldots, \theta_n \in \mathbb{R}$ such that
+        
+        $$
+        z = \theta_0 + \sum_{k=1}^n \theta_k x_k
+        $$
+        
+        %TODO
+
+        
+        Therefore the output of linear regression is some number $z \in (-\infty, \infty)$
+        
+        
     \subsection{Introducing Nonlinearity}
+        
+        Recall that the goal of a binary classification task is to assign a categorical label to each observation; so if we wish to use linear regression as the basis for our algorithm, ultimately we will need to somehow interpret the continuous output $z \in \mathbb{R}$ as corresponding to one of those labels.
+        
+        This is achieved by means of an \textit{activation function}:
+        
+        $$
+        \sigma \colon (-\infty, \infty) \to (0, 1)
+        $$
+        
+        In later sections we will consider other activation functions, but for logistic regression we typically use the \textit{sigmoid} function,
+            
+        $$
+        \sigma(z) = \frac{1}{1 + e^{-z}}
+        $$
+        
+        
+        % TODO sigmoid plot
+        
+        
+        
+            
+        
+        
+        
+        
+        
+
 
     \subsection{The Cost Function}
+        
+        
+        
+        Here we introduce the \textit{binomial cross-entropy} cost function:
+        
+        $$
+        J(\theta) = - \frac{1}{m} \sum_{k=1}^{m} \left( y_k \log(a_k) + (1 - y_k) \log(1 - a_k) \right)
+        $$
 
+    
     \subsection{Regularisation}
     
     \subsection{Training}
@@ -61,6 +120,11 @@
 \section{Neural Networks}
 
     \subsection{Multiple Outputs}
+    
+    
+    
+            
+    Shifted softmax
     
     \subsection{Forward Propagation}
 
@@ -132,7 +196,7 @@
         
         \begin{proof}
             
-            Observe that the partial derivative of $J$ with respect to $a^{(L)}_j$ (the $j$th component of the activated output $\mathbf{a}^{(L)}$) can be represented as
+            Observe that the partial derivative of $J$ with respect to $a^{(L)}_i$ (the $i$th component of the activated output $\mathbf{a}^{(L)}$) can be represented as
                     
             $$ \begin{aligned}
             \frac{\partial J(\theta)}{\partial a^{(L)}_i}
@@ -248,24 +312,6 @@
             &= a^{(L)}_j - y_j
             \end{aligned} $$
             
-        \end{proof}
-        
-        
-        \begin{lemma} For all $i = 1, \ \ldots, \ n_l$ and all $j = 1, \ \ldots, \ n_l$,
-            
-            $$
-            \frac{\partial a^{(l)}_i}{\partial z^{(l)}_j} = \begin{cases}
-                0 & i \neq j \\
-                \sigma'(z^{(l)}_j) & i = j
-            \end{cases}
-            $$
-            
-        \end{lemma}
-    
-        \begin{proof}
-        
-            Immediate, since $a^{(l)}_i = \sigma(z^{(l)}_i)$.
-        
         \end{proof}
     
         
