@@ -82,6 +82,19 @@ class Network(object):
         return None
 
 
+
+    def save_weights(self, file):
+        weights = self.get_all_weights()
+        np.save(file, weights)
+        return None
+
+    def load_weights(self, file):
+        weights = np.load(file)
+        self.set_all_weights(weights)
+        return None
+
+
+
     
     def get_all_grads(self, data, labels, penalty=0):
         
@@ -239,4 +252,5 @@ class Network(object):
                 print("Best validation accuracy:", self.get_accuracy(val_data, val_labels))
 
         return True
-    
+
+
