@@ -26,7 +26,7 @@ model = Network(layers = [
 ])
 
 model.load_weights("val_weights.npy")
-success = model.train(X_train, y_train, X_val, y_val, epochs=1000, batch_size=256, learning_rate=10, penalty=0.12, early_stopping=30)
+success = model.train(X_train, y_train, X_val, y_val, epochs=1000, batch_size=256, learning_rate=10, penalty=0.12, early_stopping=10)
 
 
 model.save_weights("final_weights.npy")
