@@ -40,11 +40,12 @@
 
 \section{Logistic Regression}
 
-    binary output (0 or 1)
+    $y$ binary output (0 or 1)
 
 
-    \subsection{Linear Regression???}
+    \subsection{Linear Regression}
         
+        % TODO intro needs work
         The underlying assumption is always that the output occurs as a result of some combination of inputs.
         
         Mathematically speaking, suppose we have an observation $\mathbf{x}$ consisting of $n \geq 1$ inputs:
@@ -53,23 +54,29 @@
         \mathbf{x} = (x_1, \ x_2, \ \ldots, \ x_{n-1}, \ x_n) \in \mathbb{R}^n
         $$
         
-        Then we assume that there exists a corresponding set of weights $\theta_0, \ldots, \theta_n \in \mathbb{R}$ such that
+        Then we assume that there exists a corresponding set of weights $\boldsymbol{\theta} = (\theta_0, \ldots, \theta_n) \in \mathbb{R}^{n+1}$ such that
         
         $$
         z = \theta_0 + \sum_{k=1}^n \theta_k x_k
         $$
         
         %TODO
-
         
-        Therefore the output of linear regression is some number $z \in (-\infty, \infty)$
+        To simplify notation later on, we can augment $\mathbf{x}$ with $x_0 = 1$ allowing us to write $z$ as a single summation:
+        
+        $$
+        z = \sum_{k=0}^n \theta_k x_k = \boldsymbol{\theta}^\top \mathbf{x}
+        $$
+        
+        By adjusting the weights $\theta_0, \ldots, \theta_n$, different values of the output $z$ can be produced. Note that if we do not restrict $\boldsymbol{\theta}$ then $z$ is unbounded, i.e. $z \in (-\infty, \infty)$.
+        
         
         
     \subsection{Introducing Nonlinearity}
         
-        Recall that the goal of a binary classification task is to assign a categorical label to each observation; so if we wish to use linear regression as the basis for our algorithm, ultimately we will need to somehow interpret the continuous output $z \in \mathbb{R}$ as corresponding to one of those labels.
+        Recall that the goal of a binary classification task is to assign a categorical label to each observation; so if we wish to use linear regression as the basis for our algorithm, ultimately we will need to somehow interpret the continuous output $z \in \mathbb{R}$ as corresponding to one of those discrete labels.
         
-        This is achieved by means of an \textit{activation function}:
+        This can be achieved by means of a nonlinear \textit{activation function}:
         
         $$
         \sigma \colon (-\infty, \infty) \to (0, 1)
@@ -85,24 +92,40 @@
         % TODO sigmoid plot
         
         
+        Note how large positive values of $z$ are approximately mapped to 1, large negative values are approximately mapped to 0, and the transition between the two asymptotic limits is relatively sudden, yet smooth, with the central "threshold" at $z = 0$.
         
-            
-        
-        
-        
+        In the remainder of this paper, the activated output $\sigma(z)$ is sometimes denoted as $a$ for the sake of notational simplicity.
         
         
-
-
+        
     \subsection{The Cost Function}
         
+        Now that we have a means of mapping an input $\mathbf{x}$ to an activated output $a \in (0, 1)$, we can begin to think about how to adjust the weights $\boldsymbol{\theta}$ so that $a$ is as close to the target output $y$ as possible.
         
-        
-        Here we introduce the \textit{binomial cross-entropy} cost function:
+        A \textit{cost function} assigns a "penalty value" based on the dissimilarity between $a$ and $y$. For example, the \textit{binary cross-entropy} is defined as follows:
         
         $$
-        J(\theta) = - \frac{1}{m} \sum_{k=1}^{m} \left( y_k \log(a_k) + (1 - y_k) \log(1 - a_k) \right)
+        CE(\boldsymbol{\theta}) = \begin{cases}
+            -\log(a) & y = 1 \\
+            -\log(1-a) & y = 0
+        \end{cases}
         $$
+        
+        
+        % TODO plot
+        
+        
+        Note that $CE$ is a function of $\boldsymbol{\theta}$ (since $a$ is a function of $z$, which is dependent on $\boldsymbol{\theta}$), that it takes a value of 0 if $a = y$, and that it increases exponentially as $a$ becomes further from $y$.
+        
+        So far we have considered a single observation $\mathbf{x}$ with a label $y$, which in combination with $\boldsymbol{\theta}$ produces a single activated output $a$. However in reality, we have multiple observations (say $m \geq 1$) each with an associated label and each producing an activated output in combination with $\boldsymbol{\theta}$. Therefore when assessing how well $\boldsymbol{\theta}$ parameterises our entire set of observations, we need to consider the cost of each of those observations.
+        
+        For that purpose, we introduce the \textit{binary cross-entropy cost function}:
+        
+        $$
+        J(\boldsymbol{\theta}) = - \frac{1}{m} \sum_{k=1}^{m} \left( y_k \log(a_k) + (1 - y_k) \log(1 - a_k) \right)
+        $$
+        
+        Since $y_k \in \{0, 1\}$, at most one of the terms in the body of the summation is non-zero for each $k$; and so $J(\boldsymbol{\theta})$ is simply the average cross-entropy across all the observations in our dataset. In other words, $J(\boldsymbol{\theta})$ quantifies how "wrong" the model is, so when adjusting $\boldsymbol{\theta}$ we will be aiming to minimise $J(\boldsymbol{\theta})$.
 
     
     \subsection{Regularisation}
