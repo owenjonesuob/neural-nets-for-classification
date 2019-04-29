@@ -4,3 +4,4 @@ report/report.*
 !report/report.tex
 !report/report.bbl
 report/MA30128*
+data/*.npz
