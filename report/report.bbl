@@ -1,3 +1,16 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{10}
+
+
+\bibitem{higham}
+C.~Higham and D.~Higham.
+\newblock Deep Learning: An Introduction for Applied Mathematicians.
+\newblock {\em arXiv:1801.05894 [math.HO]}, 2018.
+
+
+\bibitem{kmnist}
+T.~Clanuwat et~al.
+\newblock Deep Learning for Classical Japanese Literature.
+\newblock {\em arXiv:1812.01718 [cs.CV]}, 2018.
+
 
 \end{thebibliography}
