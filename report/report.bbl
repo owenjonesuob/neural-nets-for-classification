@@ -6,10 +6,24 @@ C.~Higham and D.~Higham.
 \newblock Deep Learning: An Introduction for Applied Mathematicians.
 \newblock {\em arXiv:1801.05894 [math.HO]}, 2018.
 
+
 \bibitem{lecun_backprop}
 Y.~LeCun, L.~Bottou, G.~Orr and K.~Muller.
 \newblock Efficient BackProp.
 \newblock In {\em Neural Networks: Tricks of the trade}, Springer, 1998.
+
+
+\bibitem{line_search}
+P.~Stanimirovic and M.~Miladinovic.
+\newblock Accelerated gradient descent methods with line search.
+\newblock In {\em Numerical Algorithms} 54:503-520, 2010.
+
+
+\bibitem{adam}
+D.~Kingma and J.~Ba.
+\newblock Adam: A method for stochastic optimization.
+\newblock {\em arXiv:1412.6980 [cs.LG]}, 2014.
+
 
 \bibitem{kmnist}
 T.~Clanuwat et~al.

@@ -7,6 +7,9 @@
 \newtheorem{lemma}{Lemma}
 \newtheorem{theorem}{Theorem}
 
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
 \setlength{\jot}{12pt}
 
 \usepackage{graphicx}
@@ -99,10 +102,11 @@
         
         
     \subsection{The Cost Function}
+    \label{sec:costfun}
         
         Now that we have a means of mapping an input $\mathbf{x}$ to an activated output $a \in (0, 1)$, we can begin to think about how to adjust the weights $\boldsymbol{\theta}$ so that $a$ is as close to the target output $y$ as possible.
         
-        A \textit{cost function} assigns a "penalty value" based on the dissimilarity between $a$ and $y$. For example, the \textit{binary cross-entropy} is defined as follows:
+        In order to assess how well the model is performing, we shall require some sort of "penalty value" based on the dissimilarity between $a$ and $y$. For example, the \textit{binary cross-entropy} is defined as follows:
         
         $$
         CE(\boldsymbol{\theta}) = \begin{cases}
@@ -126,17 +130,81 @@
         $$
         
         Since $y_k \in \{0, 1\}$, at most one of the terms in the body of the summation is non-zero for each $k$; and so $J(\boldsymbol{\theta})$ is simply the average cross-entropy across all the observations in our dataset. In other words, $J(\boldsymbol{\theta})$ quantifies how "wrong" the model is, so when adjusting $\boldsymbol{\theta}$ we will be aiming to minimise $J(\boldsymbol{\theta})$.
-
+    
+    
     
     \subsection{Regularisation}
-    
+        
+        % TODO
+        
+        
     \subsection{Training}
+        
+        As described at the end of Section \ref{sec:costfun}, the goal of the \textit{training} process is to minimise the cost function $J(\boldsymbol{\theta})$ by making changes to the parameters $\boldsymbol{\theta}$: in other words, we essentially have an optimisation problem, which we can tackle in countless different ways.
+        
+        Here we will focus on \textit{gradient descent}, an iterative method which takes successive steps converging towards a minimum optimal value. Although many other more sophisticated optimisation algorithms exist, gradient descent is one of the most commonly used optimisation methods due to its simplicity yet relative effectiveness: see \cite{lecun_backprop} for further details.
+        
+        
+        \subsubsection{Descent Direction}
+            
+            Since we wish to reduce $J(\boldsymbol{\theta})$ by taking some step in parameter space, before doing anything else we must determine the direction in which to take that step.
+            
+            Consider a perturbation $\Delta \boldsymbol{\theta}$ to our current parameters $\boldsymbol{\theta} \in \mathbb{R}^{n+1}$, and notice that a Taylor expansion yields
+            
+            $$
+            J(\boldsymbol{\theta} + \Delta \boldsymbol{\theta}) = J(\boldsymbol{\theta}) + \sum_{k=0}^{n+1} \frac{\partial J(\boldsymbol{\theta})}{\partial \theta_k} \Delta \boldsymbol{\theta} + \mathcal{O} ((\Delta \boldsymbol{\theta})^2)
+            $$
+            
+            Then ignoring higher-order terms, we have
+            
+            $$
+            J(\boldsymbol{\theta} + \Delta \boldsymbol{\theta}) \approx J(\boldsymbol{\theta}) + \nabla J(\boldsymbol{\theta})^\top \Delta \boldsymbol{\theta}
+            $$
+            
+            Now we greedily choose $\Delta \boldsymbol{\theta}$ such that we reduce $J(\boldsymbol{\theta})$ by as much as possible - i.e. by making $\nabla J(\boldsymbol{\theta})^\top \Delta \boldsymbol{\theta}$ as negative as possible. By the Cauchy-Schwarz inequality, the most negative value of $\mathbf{f}^\top \mathbf{g}$ for any $\mathbf{f}, \mathbf{g} \in \mathbb{R}^{n+1}$ is $- \lVert \mathbf{f} \rVert_2 \lVert \mathbf{g} \rVert_2$, when $\mathbf{f} = -\mathbf{g}$. Therefore we shall choose $\Delta \boldsymbol{\theta} = - \nabla J(\boldsymbol{\theta})$ as our \textit{descent direction}. Note that $\nabla J(\boldsymbol{\theta})^\top (- \nabla J(\boldsymbol{\theta})) = -\lVert \nabla J(\boldsymbol{\theta}) \rVert_2^2 \leq 0$ with equality if and only if $\nabla J(\boldsymbol{\theta}) = 0$, and consequently $J(\boldsymbol{\theta} + \Delta \boldsymbol{\theta}) < J(\boldsymbol{\theta})$ so long as $\nabla J(\boldsymbol{\theta}) \neq 0$.
+        
     
-    % TODO
-    Hyperparams
-    Variable learning rate
-    Validation set
-    Early stopping
+    
+        \subsubsection{Learning rate}
+            
+            While it is guaranteed that the "steepest descent" direction we have just chosen, $\Delta \boldsymbol{\theta} = - \nabla J(\boldsymbol{\theta})$, is indeed a descent direction, we must recall at this point that we are using a Taylor series approximation for $J(\boldsymbol{\theta} + \Delta \boldsymbol{\theta})$. Therefore this guarantee only applies in some (potentially very small) radius of the parameter space, centred on $\boldsymbol{\theta}$.
+            
+            Consequently in order to ensure that we obtain a reduction in $J$, we must scale $\Delta \boldsymbol{\theta}$ by some value $\eta$. This value is called the \textit{learning rate}.
+            
+            Selecting a learning rate is often a delicate task. Too small a value results in undersized steps in the descent direction, meaning convergence might be slow; too large a value may result in "overshooting" the region where descent is guaranteed, leading to oscillation around the optimum or even to complete divergence.
+            
+            As such, it is often favourable to use an \textit{adaptive learning rate}: rather than a fixed constant $\eta$, a new value $\eta_k$ is used at each iteration of the algorithm. Many methods exist for determining such adaptive rates, often based on line search methods - see \cite{line_search} and \cite{adam}.
+            
+            In this paper we will use a relatively simple method based on backtracking line search, where the learning rate is grown by some constant factor at each iteration, and then dramatically decreased when it is too large.
+            
+            
+            \begin{algorithm} \label{alg:grow_and_slash}
+                
+                \caption{"Grow and slash" learning rate}
+                
+                \begin{algorithmic}
+                
+                    \State Choose $\eta_1 > 0$, $\alpha \geq 1$, $\beta \geq 1$ (in practice, $\alpha = 1.1$, $\beta = 2$ work well).
+                    
+                    \For {iterations $k = 1, ...$ of gradient descent}
+                        \While {$J(\boldsymbol{\theta} + \eta_k (\Delta \boldsymbol{\theta})) > J(\boldsymbol{\theta})$}
+                            \State $\eta_k \gets \eta_k / \beta$
+                        \EndWhile
+                        
+                        \State $\eta_{k+1} \gets \alpha \eta_k$
+                    \EndFor
+                    
+                \end{algorithmic}
+            \end{algorithm}
+                    
+                
+                
+            
+            
+            
+            
+
+        
 
 
 
@@ -418,6 +486,17 @@
         
 
 
+
+    \subsection{Improvements to Training}
+        
+        
+        \subsubsection{Stochastic Gradient Descent}
+        
+        \subsubsection{Validation and Testing}
+
+
+
+        \subsubsection{Early Stopping}
 
 
 
