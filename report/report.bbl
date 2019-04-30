@@ -37,6 +37,12 @@ D.~Rumelhart, G.~Hinton and R. Williams.
 \newblock In {\em Nature} 323:533-536, 1986.
 
 
+\bibitem{early_stopping}
+L.~Prechelt.
+\newblock Early Stopping — But When?.
+\newblock In {\em Neural Networks: Tricks of the Trade}. Lecture Notes in Computer Science, vol 7700. Springer, 2012.
+
+
 \bibitem{kmnist}
 T.~Clanuwat et~al.
 \newblock Deep Learning for Classical Japanese Literature.
