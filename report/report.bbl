@@ -25,6 +25,12 @@ D.~Kingma and J.~Ba.
 \newblock {\em arXiv:1412.6980 [cs.LG]}, 2014.
 
 
+\bibitem{bionets}
+A.~Thomas and C. Kaltschmidt.
+\newblock Bio-inspired Neural Networks.
+\newblock In {\em Memristor Networks}, Springer, 2014.
+
+
 \bibitem{kmnist}
 T.~Clanuwat et~al.
 \newblock Deep Learning for Classical Japanese Literature.
