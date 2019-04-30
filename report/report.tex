@@ -46,7 +46,7 @@
     In Section \ref{sec:demos} of this paper, the 
 
 
-\section{Logistic Regression}
+\section{Logistic Regression} \label{sec:logreg}
 
     % TODO
 
@@ -158,7 +158,7 @@
             Consider a perturbation $\Delta \boldsymbol{\theta}$ to our current parameters $\boldsymbol{\theta} \in \mathbb{R}^{n+1}$, and notice that a Taylor expansion yields
             
             $$
-            J(\boldsymbol{\theta} + \Delta \boldsymbol{\theta}) = J(\boldsymbol{\theta}) + \sum_{k=0}^{n+1} \frac{\partial J(\boldsymbol{\theta})}{\partial \theta_k} \Delta \boldsymbol{\theta} + \mathcal{O} ((\Delta \boldsymbol{\theta})^2)
+            J(\boldsymbol{\theta} + \Delta \boldsymbol{\theta}) = J(\boldsymbol{\theta}) + \sum_{k=0}^{n+1} \frac{\partial J(\boldsymbol{\theta})}{\partial \theta_k} (\Delta \boldsymbol{\theta})_k + \mathcal{O} ((\Delta \boldsymbol{\theta})^2)
             $$
             
             Then ignoring higher-order terms, we have
@@ -317,50 +317,17 @@
 
     \subsection{Backpropagation}
         
+        Just as in the logistic regression model described in Section \ref{sec:logreg}, when training our model we wish to minimise the cost function $J$ by adjusting the weights in the model. The difference now is that we have multiple layers of neurons, only the last of which is directly connected to the network's output $\mathbf{a}^{(L)}$; and therefore if we still wish to use some gradient-based optimisation method to update the weights, we will need to determine way of calculating $\frac{\partial J}{\partial \theta^{(l)}_{i,j}}$, i.e. the derivative of the cost function with respect to each individual weight in the network.
         
-        $$
-        \frac{\partial J}{\partial \theta^{(L-1)}} =
-            \frac{\partial J}{\partial \mathbf{a}^{(L)}} \
-            \frac{\partial \mathbf{a}^{(L)}}{\partial \mathbf{z}^{(L)}} \
-            \frac{\partial \mathbf{z}^{(L)}}{\partial \theta^{(L-1)}}
-        $$
-
-
-
-        $$
-        \frac{\partial J}{\partial \theta^{(L-2)}} =
-            \frac{\partial J}{\partial \mathbf{a}^{(L)}} \
-            \frac{\partial \mathbf{a}^{(L)}}{\partial \mathbf{z}^{(L)}} \
-            \frac{\partial \mathbf{z}^{(L)}}{\partial \mathbf{a}^{(L-1)}} \
-            \frac{\partial \mathbf{a}^{(L-1)}}{\partial \mathbf{z}^{(L-1)}} \
-            \frac{\partial \mathbf{z}^{(L-1)}}{\partial \mathbf{a}^{(L-2)}}
-        $$
-
-
-
-        Where we define the "error" of layer $l$ as $\boldsymbol{\delta}^{(l)}$
-    
+        We now prove a series of results culminating in Theorem \ref{thm:backprop}, which allows us to do exactly that. Whenever relevant, we consider the cost for a dataset of size $m = 1$ where the observation has a one-hot target label $\mathbf{y} \in \mathbb{R}^{n_L}$; but note that everything immediately generalises to larger values of $m$, since in all cases differentiation distributes over the outer summation (over $m$).
+        
+        Before starting, we define a useful intermediate quantity: the \textit{error} of layer $l$, $\boldsymbol{\delta}^{(l)} \in \mathbb{R}^{n_l}$, with components defined for $j = 1, \ldots, n_l$ by
+        
         $$
         \delta^{(l)}_j = \frac{\partial J}{\partial z^{(l)}_j}
         $$
         
-        The $j$th component of this error vector is a measure of the sensitivity of the cost function $J(\theta)$ to the (weighted) input from neuron $j$ in layer $l$. Although it is \textit{not} a direct measure of how much a particular neuron is at fault for mistakes in the network's eventual output, such an explanation is at least valid intuitively, since all partial derivatives must be zero if the cost function is at a minimum.
-        
-        
-        % TODO wording!!!
-        Now define recursively... for $l = 1, \ldots, L-1$
-        
-        $$
-        \delta^{(l)} =
-        \delta^{(l+1)} \
-        \frac{\partial \mathbf{z}^{(l+1)}}{\partial \mathbf{a}^{(l)}} \
-        \frac{\partial \mathbf{a}^{(l)}}{\partial \mathbf{z}^{(l)}} \
-        $$
-        
-        
-        
-        
-        We now prove a series of results culminating in Theorem \ref{thm:backprop}, which allows us to calculate the gradient of the cost function $J$ with respect to each weight in each layer of the network. Whenever relevant, we consider the cost for a dataset of size $m = 1$ where the observation has a one-hot target label $\mathbf{y} \in \mathbb{R}^{n_L}$; but note that everything immediately generalises to larger values of $m$, since in all cases differentiation distributes over the outer summation (over $m$).
+        The $j$th component of this error vector is a measure of the sensitivity of the cost function $J$ to the (weighted) output from neuron $j$ in layer $l$. Although it is not exactly a direct measure of how much a particular neuron is at fault for mistakes in the network's eventual output, such an explanation is at least valid intuitively, since all partial derivatives must be zero if the cost function is at a minimum.
         
         Initially we calculate the error term $\delta^{(L)}_j$ for each neuron in the final layer of the network, for each of the binary and multiclass settings.
         
