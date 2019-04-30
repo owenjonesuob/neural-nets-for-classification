@@ -6,6 +6,7 @@
 \usepackage{amsthm}
 \newtheorem{lemma}{Lemma}
 \newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
 
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -25,6 +26,9 @@
 
 
 \begin{abstract}
+    
+    %TODO
+    
 	Here is the contents of my abstract blah blah blah blah blah.
 \end{abstract}
 
@@ -32,6 +36,7 @@
 
 \section{Introduction to Classification Problems}
 
+    % TODO
     Historically, machine learning tasks have fallen into one of several categories: supervised learning problems, unsupervised learning problems, and more recently reinforcement learning
     
     Classification tasks (in the sense which this paper considers) belong to the supervised learning family of tasks, where the data used in the training process is \textit{labelled}
@@ -42,6 +47,8 @@
 
 
 \section{Logistic Regression}
+
+    % TODO
 
     $y$ binary output (0 or 1)
 
@@ -62,8 +69,6 @@
         $$
         z = \theta_0 + \sum_{k=1}^n \theta_k x_k
         $$
-        
-        %TODO
         
         To simplify notation later on, we can augment $\mathbf{x}$ with $x_0 = 1$ allowing us to write $z$ as a single summation:
         
@@ -88,7 +93,7 @@
         In later sections we will consider other activation functions, but for logistic regression we typically use the \textit{sigmoid} function,
             
         $$
-        \sigma(z) = \frac{1}{1 + e^{-z}}
+        \sigma_2(z) = \frac{1}{1 + e^{-z}}
         $$
         
         
@@ -123,13 +128,13 @@
         
         So far we have considered a single observation $\mathbf{x}$ with a label $y$, which in combination with $\boldsymbol{\theta}$ produces a single activated output $a$. However in reality, we have multiple observations (say $m \geq 1$) each with an associated label and each producing an activated output in combination with $\boldsymbol{\theta}$. Therefore when assessing how well $\boldsymbol{\theta}$ parameterises our entire set of observations, we need to consider the cost of each of those observations.
         
-        For that purpose, we introduce the \textit{binary cross-entropy cost function}:
+        For that purpose, we generally consider some \textit{cost function} $J(\boldsymbol{\theta})$ which combines the individual costs from each observation. Such a function effectively quantifies how "wrong" the model is, so when adjusting $\boldsymbol{\theta}$ we will be aiming to minimise $J(\boldsymbol{\theta})$. A typical choice for binary classification problems is the \textit{binary cross-entropy cost function}:
         
         $$
-        J(\boldsymbol{\theta}) = - \frac{1}{m} \sum_{k=1}^{m} \left( y_k \log(a_k) + (1 - y_k) \log(1 - a_k) \right)
+        J_2(\boldsymbol{\theta}) = \frac{1}{m} \sum_{i=1}^{m} CE(\boldsymbol{\theta}) = - \frac{1}{m} \sum_{i=1}^{m} \left( y_i \log(a_i) + (1 - y_i) \log(1 - a_i) \right)
         $$
         
-        Since $y_k \in \{0, 1\}$, at most one of the terms in the body of the summation is non-zero for each $k$; and so $J(\boldsymbol{\theta})$ is simply the average cross-entropy across all the observations in our dataset. In other words, $J(\boldsymbol{\theta})$ quantifies how "wrong" the model is, so when adjusting $\boldsymbol{\theta}$ we will be aiming to minimise $J(\boldsymbol{\theta})$.
+        Since $y_i \in \{0, 1\}$, at most one of the terms in the body of the summation is non-zero for each $i$; and so $J_2(\boldsymbol{\theta})$ is simply the average cross-entropy across all $m$ observations in our dataset.
     
     
     
@@ -175,7 +180,7 @@
             
             As such, it is often favourable to use an \textit{adaptive learning rate}: rather than a fixed constant $\eta$, a new value $\eta_k$ is used at each iteration of the algorithm. Many methods exist for determining such adaptive rates, often based on line search methods - see \cite{line_search} and \cite{adam}.
             
-            In this paper we will use a relatively simple method based on backtracking line search, where the learning rate is grown by some constant factor at each iteration, and then dramatically decreased when it is too large.
+            In this paper we will use a relatively simple method based on backtracking line search, where the learning rate is steadily grown by some constant factor at each iteration, and then more dramatically decreased when it is too large.
             
             
             \begin{algorithm} \label{alg:grow_and_slash}
@@ -184,7 +189,7 @@
                 
                 \begin{algorithmic}
                 
-                    \State Choose $\eta_1 > 0$, $\alpha \geq 1$, $\beta \geq 1$ (in practice, $\alpha = 1.1$, $\beta = 2$ work well).
+                    \State Choose $\eta_1 > 0$, $\alpha > 1$, $\beta > 1$ (in practice, $\alpha = 1.1$, $\beta = 2$ work well).
                     
                     \For {iterations $k = 1, ...$ of gradient descent}
                         \While {$J(\boldsymbol{\theta} + \eta_k (\Delta \boldsymbol{\theta})) > J(\boldsymbol{\theta})$}
@@ -195,29 +200,104 @@
                     \EndFor
                     
                 \end{algorithmic}
+            
             \end{algorithm}
                     
                 
-                
             
             
-            
-            
-
+            % TODO summarise
         
 
 
 
 \section{Neural Networks}
+    
+    % TODO
+    Blah blah blah.
+    
+    % TODO Mention single-neuron non-activated output for regression?
+    
+    
 
     \subsection{Multiple Outputs}
     
+        So far we have considered passing the input $\mathbf{x}$ into a single logistic regression model, yielding a single scalar output $a$.
     
-    
+        By passing the same input $\mathbf{x}$ to $n$ separate logistic regression models, we can obtain $n$ separate outputs $a_1, \ldots, a_n$. If each model is initialised with a different set of weights $\boldsymbol{\theta_n}$, each would produce a slightly different output.
+        
+        Now suppose that we have a classification problem where each observation can belong to one of $n \geq 2$ classes. We can characterise the target output as a \textit{one-hot encoded} vector $\mathbf{y} \in \mathbb{R}^n$: for $\mathbf{x}$ belonging to class $k$, we define
+        
+        $$
+        y_k = \begin{cases}
+            1 & \text{observation belongs to class } k \\
+            0 & \text{otherwise}
+        \end{cases}
+        $$
+        
+        Thus we can train the $k$th model to produce an output of 1, and the other $(n-1)$ models to produce an output of 0; and consequently we can obtain a prediction for the class of a new observation by seeing which model produces the output closest to 1.
+
+        Moreover, often in such settings it is useful to have not only a prediction of the class, but also some estimation of the \textit{certainty} of that prediction.
+        
+        This motivates the introduction of a new activation function, the \textit{softmax} function: if $\mathbf{z} \in \mathbb{R}^n$, then for $j = 1, \ldots, n$,
+        
+        $$
+        \sigma(z_j) = \frac{e^{z_j}}{\sum_{k=1}^{n} e^{z_k}}
+        $$
+        
+        Since this is a normalisation of the exponentiated raw output $\mathbf{z}$, the elements of the resulting vector $\mathbf{a}$ sum to 1; and therefore each of these $n$ values can be interpreted as the probability of $x$ belonging to that class.
+        
+        Note the following useful property of the softmax function: 
+        
+        \begin{proposition}
             
-    Shifted softmax
+            The softmax function is invariant to constant shifts.
+            
+        \end{proposition}
     
-    \subsection{Forward Propagation}
+        \begin{proof}
+            
+            Let $c \in \mathbb{R}$, and let $\mathbf{\bar{z}} \in \mathbb{R}^n$ be defined by $\bar{z}_j = z_j - c$ for all $j = 1, \ldots, n$. Observe that
+            
+            $$ \begin{aligned}
+                \sigma(\bar{z}_j)
+                &= \frac{e^{\bar{z}_j}}{\sum_{k=1}^{n} e^{\bar{z}_k}}
+                &= \frac{e^{z_j - c}}{\sum_{k=1}^{n} e^{z_k - c}} \\
+                &= \frac{e^{-c} e^{z_j}}{\sum_{k=1}^{n} e^{-c} e^{z_k}} \\
+                &= \frac{e^{z_j}}{\sum_{k=1}^{n} e^{z_k}} \\
+                &= \sigma(z_j)
+            \end{aligned} $$
+            
+        \end{proof}
+        
+        In practical applications, a shift of $c = \max_{j = 1, \ldots, n} z_j$ is often applied since this eliminates the slight risk of computational inaccuracies being introduced by very large values of $e^{z_j}$.
+        
+        The \textit{multiclass cross-entropy cost function} is typically used with multiclass softmax outputs:
+        
+        $$
+        J(\boldsymbol{\theta}) = \frac{1}{m} \sum_{i=1}^{m} \left( - \sum_{k=1}^{n} (y_i)_k \log((a_i)_k) \right)
+        $$
+        
+        Note that this is in fact a generalisation of the binary cross-entropy cost function: since $\mathbf{y_i}$ is a one-hot vector, only one term of the inner summation is non-zero, just as only one of the two terms in the binary cross-entropy is non-zero.
+        
+        
+        
+    
+    \subsection{Layers and Forward Propagation}
+        
+        Consider 
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        Since we now have a set of outputs $\mathbf{z}$ (and activated outputs $\mathbf{a}$) from each layer of our network, some extensions to the notation we have been using so far are necessary: we shall henceforth use a superscript index to indicate the layer which produces each output, i.e. in an $L$-layer network we will have $\mathbf{z}^{(l)}$ and $\mathbf{a}^{(l)}$ for $l = 1, \ldots, L$. Moreover we shall denote the dimension of these vectors as $n_l$ for each $l$, where a bias unit is implicitly included as the first element of each input. % TODO is this okay??
+        
+        
 
     \subsection{Backpropagation}
         
@@ -274,9 +354,16 @@
         % TODO reword this - binary/multiclass?
         Note that when $J(\theta)$ is the cross-entropy cost function, the error in the final layer $L$ can be calculated as follows:
         
+        
+        
+        
+        In all the following results, we consider the cost for a dataset of size $m = 1$; but note that everything immediately generalises to larger values of $m$, since in all cases differentiation distributes over the outer summation (over $m$).
+        
+        
+        
         \begin{lemma}
             
-            If $J$ is the \textbf{binomial cross-entropy} cost function, and $\sigma$ is the \textbf{sigmoid} activation function, then for all $j = 1, \ \ldots, \ n_L$
+            If $J_2$ is the binomial cross-entropy cost function, and $\sigma_2$ is the sigmoid activation function, then for all $j = 1, \ \ldots, \ n_L$
             
             $$
             \delta^{(L)}_j = a^{(L)}_j - y_j
@@ -287,11 +374,11 @@
         
         \begin{proof}
             
-            Observe that the partial derivative of $J$ with respect to $a^{(L)}_i$ (the $i$th component of the activated output $\mathbf{a}^{(L)}$) can be represented as
+            Observe that the partial derivative of $J_2$ with respect to $a^{(L)}_i$ (the $i$th component of the activated output $\mathbf{a}^{(L)}$) can be represented as
                     
             $$ \begin{aligned}
-            \frac{\partial J(\theta)}{\partial a^{(L)}_i}
-            &= \frac{\partial}{\partial a^{(L)}_i} \left( - \sum_{k=1}^{n_L} \left( y_k \log(a^{(L)}_k) + (1 - y_k) \log(1 - a^{(L)}_k) \right) \right) \\
+            \frac{\partial J_2}{\partial a^{(L)}_i}
+            &= \frac{\partial}{\partial a^{(L)}_i} \left( - y_i \log(a^{(L)}_i) - (1 - y_i) \log(1 - a^{(L)}_i) \right) \\
             &= - \frac{y_i}{a^{(L)}_i} + \frac{1 - y_i}{1 - a^{(L)}_i}
             \end{aligned} $$
             
@@ -299,7 +386,7 @@
             
             $$ \begin{aligned}
             \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j}
-            &= \frac{\partial}{\partial z^{(L)}_j} \left( \sigma(z^{(L)}_j) \right)
+            &= \frac{\partial}{\partial z^{(L)}_j} \left( \sigma_2(z^{(L)}_j) \right)
             &= \frac{\partial}{\partial z^{(L)}_j} \left( \frac{1}{1 + e^{-z^{(L)}_i}} \right)
             \end{aligned} $$
                 
@@ -310,14 +397,14 @@
             &= \left( - e^{-z^{(L)}_j} \right) \left( - \left( 1 + e^{-z^{(L)}_j} \right)^{-2} \right) \\
             &= \frac{e^{-z^{(L)}_j}}{\left( 1 + e^{-z^{(L)}_j} \right) \left( 1 + e^{-z^{(L)}_j} \right)} \\
             &= \left( \frac{1}{1 + e^{-z^{(L)}_j}} \right) \left( \frac{\left( 1 + e^{-z^{(L)}_j} \right) - 1}{1 + e^{-z^{(L)}_j}} \right) \\
-            &= \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right) \\
+            &= \sigma_2(z^{(L)}_j) \left( 1 - \sigma_2(z^{(L)}_j) \right) \\
             &= a^{(L)}_j \left( 1 - a^{(L)}_j \right)
             \end{aligned} $$
             
             Now using the definition of $\boldsymbol{\delta}^{(L)}$ and the chain rule,
             
             $$ \begin{aligned}
-            \delta^{(L)}_j &= \frac{\partial J(\theta)}{\partial z^{(L)}_j} \\
+            \delta^{(L)}_j &= \frac{\partial J_2(\theta)}{\partial z^{(L)}_j} \\
             &= \sum_{i=1}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
             &= \frac{\partial J(\theta)}{\partial a^{(L)}_j} \ \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} + \sum_{\substack{i=1 \\ i \neq j}}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
             &= \frac{\partial J(\theta)}{\partial a^{(L)}_j} \ \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} + 0 \\
@@ -335,7 +422,7 @@
         
         \begin{lemma}
             
-            If $J$ is the \textbf{multiclass cross-entropy} cost function, and $\sigma$ is the \textbf{softmax} activation function, then for all $j = 1, \ \ldots, \ n_L$
+            If $J$ is the multiclass cross-entropy cost function, and $\sigma$ is the softmax activation function, then for all $j = 1, \ \ldots, \ n_L$
             
             $$
             \delta^{(L)}_j = a^{(L)}_j - y_j
@@ -349,7 +436,7 @@
             Firstly note that
             
             $$ \begin{aligned}
-            \frac{\partial J(\theta)}{\partial a^{(L)}_i}
+            \frac{\partial J}{\partial a^{(L)}_i}
             &= \frac{\partial}{\partial a^{(L)}_i} \left( - \sum_{k=1}^{n_L} y_k \log(a^{(L)}_k) \right) \\
             &= - \frac{y_i}{a^{(L)}_i}
             \end{aligned} $$
@@ -519,7 +606,7 @@
 
 
 
-\section{Areas for Further Work}    
+\section{Areas for Further Work}
 
 
 
@@ -527,5 +614,4 @@
 \bibliographystyle{abbrv}
 
 \end{document}
-	
 	
