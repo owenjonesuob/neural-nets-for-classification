@@ -106,8 +106,7 @@
         
         
         
-    \subsection{The Cost Function}
-    \label{sec:costfun}
+    \subsection{Quantifying Incorrectness} \label{sec:costfun}
         
         Now that we have a means of mapping an input $\mathbf{x}$ to an activated output $a \in (0, 1)$, we can begin to think about how to adjust the weights $\boldsymbol{\theta}$ so that $a$ is as close to the target output $y$ as possible.
         
@@ -141,6 +140,8 @@
     \subsection{Regularisation}
         
         % TODO
+        
+        Dissuading specificity
         
         
     \subsection{Training}
@@ -220,7 +221,7 @@
     
     
 
-    \subsection{Multiple Outputs}
+    \subsection{Multiple Outputs} \label{sec:multi_out}
     
         So far we have considered passing the input $\mathbf{x}$ into a single logistic regression model, yielding a single scalar output $a$.
     
@@ -285,17 +286,30 @@
     
     \subsection{Layers and Forward Propagation}
         
-        Consider 
+        Recall that the motivation behind logistic regression was to find some underlying pattern in the input which characterised the class of that input.
         
+        With the "multiple output" model described in Section \ref{sec:multi_out}, we produced $n$ separate models, and initialised each of them with a different set of weights $\boldsymbol{\theta_n}$ in the hope of learning different patterns and consequently producing different outputs (see \cite{lecun_backprop} for more information on selecting initial weights).
         
+        But now notice that these $n$ outputs, when considered together, form a new vector $\mathbf{a} \in \mathbb{R}^n$ - and there is no reason why we shouldn't use this new vector as the input into a \textit{different} set of logistic regression models, which learn to identify patterns in \textit{those} values (i.e. patterns of patterns in the original input $\mathbf{x}$). And subsequently, there is no reason why we shouldn't use the vector produced by \textit{that} set of models as the input to \textit{another} set of models, and so on.
         
+        This is the underlying principle of an \textit{artificial neural network}. Each set of logistic regression models is referred to as a \textit{layer}, and each model is referred to as a \textit{neuron}. This terminology was inspired by the parallels between such networks of connected models and the activity of neurons in the brain, and there continues to be much ongoing work in the development of biologically-inspired models \cite{bionets}.
         
+        Since we now have a set of outputs $\mathbf{z}$ (and activated outputs $\mathbf{a}$) from each layer of our network, some extensions to the notation we have been using so far are necessary:
         
+        \begin{itemize}
+            
+            \item A superscript index will be used to indicate the layer which produces each output, i.e. in an $L$-layer network we will have $\mathbf{z}^{(l)}$ and $\mathbf{a}^{(l)}$ for $l = 1, \ldots, L$
+            
+            \item We shall denote the dimension of these vectors as $n_l$ for each $l$
+            
+            \item A bias unit $a_0 = 1$ is prepended as the first element of each output $\mathbf{a}^{(l)}$ before it is used as the input to the next layer.
+            
+            \item Each neuron in layer $l$ will consequently contain $(n_{l-1} + 1)$ weights; the weights for the $n_l$ models in each layer shall be stored as the rows of a matrix $\theta^{(l)} \in \mathbb{R}^{n_l, (n_{l-1}+1)}$, so the $i$th weight from the $j$th neuron in the layer which produces $\mathbf{a}^{(l)}$ is $\theta^{(l)}_{i,j}$
         
+        \end{itemize}
         
+        The propagation of the original input through the layers of the network is called \textit{forward propagation}. Note that the activated output of the final layer, $\mathbf{a}^{(L)}$, is considered to be the overall output of the network.
         
-        
-        Since we now have a set of outputs $\mathbf{z}$ (and activated outputs $\mathbf{a}$) from each layer of our network, some extensions to the notation we have been using so far are necessary: we shall henceforth use a superscript index to indicate the layer which produces each output, i.e. in an $L$-layer network we will have $\mathbf{z}^{(l)}$ and $\mathbf{a}^{(l)}$ for $l = 1, \ldots, L$. Moreover we shall denote the dimension of these vectors as $n_l$ for each $l$, where a bias unit is implicitly included as the first element of each input. % TODO is this okay??
         
         
 
@@ -404,10 +418,10 @@
             Now using the definition of $\boldsymbol{\delta}^{(L)}$ and the chain rule,
             
             $$ \begin{aligned}
-            \delta^{(L)}_j &= \frac{\partial J_2(\theta)}{\partial z^{(L)}_j} \\
-            &= \sum_{i=1}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
-            &= \frac{\partial J(\theta)}{\partial a^{(L)}_j} \ \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} + \sum_{\substack{i=1 \\ i \neq j}}^{n_L} \left( \frac{\partial J(\theta)}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
-            &= \frac{\partial J(\theta)}{\partial a^{(L)}_j} \ \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} + 0 \\
+            \delta^{(L)}_j &= \frac{\partial J_2}{\partial z^{(L)}_j} \\
+            &= \sum_{i=1}^{n_L} \left( \frac{\partial J_2}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
+            &= \frac{\partial J_2}{\partial a^{(L)}_j} \ \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} + \sum_{\substack{i=1 \\ i \neq j}}^{n_L} \left( \frac{\partial J_2}{\partial a^{(L)}_i} \ \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j} \right) \\
+            &= \frac{\partial J_2}{\partial a^{(L)}_j} \ \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} + 0 \\
             &= \left( - \frac{y_j}{a^{(L)}_j} + \frac{1 - y_j}{1 - a^{(L)}_j} \right) a^{(L)}_j \left( 1 - a^{(L)}_j \right) \\
             &= a^{(L)}_j (1 - y_j) - y_j (1 - a^{(L)}_j) \\
             &= a^{(L)}_j - y_j
@@ -496,10 +510,10 @@
         
         \begin{lemma}
             
-            For all $i = 1, \ \ldots, \ n_l$ and all $j = 1, \ \ldots, \ n_{l-1}$,
+            For all $i = 1, \ \ldots, \ n_l$ and all $j = 0, \ \ldots, \ n_{l-1}$,
             
             $$
-            \frac{\partial z^{(l)}_i}{\partial a^{(l-1)}_j} = \theta^{(l-1)}_{i,j}
+            \frac{\partial z^{(l)}_i}{\partial a^{(l-1)}_j} = \theta^{(l)}_{i,j}
             $$
             
         \end{lemma}
@@ -510,8 +524,8 @@
             
             $$ \begin{aligned}
             \frac{\partial z^{(l)}_i}{\partial a^{(l-1)}_j}
-            &= \frac{\partial}{\partial a^{(l-1)}_j} \left( \sum_{k = 1}^{n_{l-1}} a^{(l-1)}_k \theta^{(l-1)}_{i,k} \right) \\
-            &= \theta^{(l-1)}_{i,j}
+            &= \frac{\partial}{\partial a^{(l-1)}_j} \left( \sum_{k=0}^{n_{l-1}} a^{(l-1)}_k \theta^{(l)}_{i,k} \right) \\
+            &= \theta^{(l)}_{i,j}
             \end{aligned} $$
             
         \end{proof}
@@ -521,10 +535,10 @@
         
         \begin{lemma}
             
-            For all $i = 1, \ \ldots, \ n_l$ and all $j = 1, \ \ldots, \ n_{l-1}$,
+            For all $i = 1, \ \ldots, \ n_l$ and all $j = 0, \ \ldots, \ n_{l-1}$,
             
             $$
-            \frac{\partial z^{(l)}_p}{\partial \theta^{(l-1)}_{i,j}} = \begin{cases}
+            \frac{\partial z^{(l)}_p}{\partial \theta^{(l)}_{i,j}} = \begin{cases}
                 0 & p \neq i \\
                 a^{(l-1)}_j & p = i
             \end{cases}
@@ -537,9 +551,9 @@
             Using the definition of $z^{(l)}_p$,
             
             $$ \begin{aligned}
-            \frac{\partial z^{(l)}_p}{\partial \theta^{(l-1)}_{i,j}}
-            &= \frac{\partial}{\partial \theta^{(l-1)}_{i,j}} \left( \sum_{k=1}^{n_{l-1}} \theta^{(l-1)}_{p,k} a^{(l-1)}_k \right) \\
-            &= \sum_{k=1}^{n_{l-1}} \frac{\partial}{\partial \theta^{(l-1)}_{i,j}} \left( \theta^{(l-1)}_{p,k} a^{(l-1)}_k \right)
+            \frac{\partial z^{(l)}_p}{\partial \theta^{(l)}_{i,j}}
+            &= \frac{\partial}{\partial \theta^{(l)}_{i,j}} \left( \sum_{k=0}^{n_{l-1}} \theta^{(l)}_{p,k} a^{(l-1)}_k \right) \\
+            &= \sum_{k=0}^{n_{l-1}} \frac{\partial}{\partial \theta^{(l)}_{i,j}} \left( \theta^{(l)}_{p,k} a^{(l-1)}_k \right)
             \end{aligned} $$
             
             The result follows by noting that all terms in the summation, or all-but-one terms if $p = i$, are zero.
@@ -551,8 +565,10 @@
         
         \begin{theorem}
             
+            For all $i = 1, \ \ldots, \ n_l$ and all $j = 0, \ \ldots, \ n_{l-1}$,
+            
             $$
-            \frac{\partial J}{\partial \theta^{(l-1)}_{i,j}} = \delta^{(l)}_i a^{(l-1)}_j
+            \frac{\partial J}{\partial \theta^{(l)}_{i,j}} = \delta^{(l)}_i a^{(l-1)}_j
             $$
             
         \end{theorem}
@@ -562,9 +578,9 @@
             Using the chain rule, the definition of $\boldsymbol{\delta}^{(l)}$ and the results from the previous lemmas,
             
             $$ \begin{aligned}
-            \frac{\partial J}{\partial \theta^{(l-1)}_{i,j}}
-            &= \sum_{k=1}^{n_l} \left( \frac{\partial J(\theta)}{\partial z^{(l)}_k} \ \frac{\partial z^{(l)}_k}{\partial \theta^{(l-1)}_{i,j}} \right) \\
-            &= \sum_{k=1}^{n_l} \left( \delta^{(l)}_k \frac{\partial z^{(l)}_k}{\partial \theta^{(l-1)}_{i,j}} \right) \\
+            \frac{\partial J}{\partial \theta^{(l)}_{i,j}}
+            &= \sum_{k=1}^{n_l} \left( \frac{\partial J}{\partial z^{(l)}_k} \ \frac{\partial z^{(l)}_k}{\partial \theta^{(l)}_{i,j}} \right) \\
+            &= \sum_{k=1}^{n_l} \left( \delta^{(l)}_k \frac{\partial z^{(l)}_k}{\partial \theta^{(l)}_{i,j}} \right) \\
             &= \delta^{(l)}_i a^{(l-1)}_j
             \end{aligned}$$
         
@@ -588,8 +604,7 @@
 
 
 
-\section{Demonstration of Methods}
-\label{sec:demos}
+\section{Demonstration of Methods} \label{sec:demos}
 
     \subsection{Binary Classification}
     
