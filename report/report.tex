@@ -276,7 +276,7 @@
         The \textit{multiclass cross-entropy cost function} is typically used with multiclass softmax outputs:
         
         $$
-        J(\boldsymbol{\theta}) = \frac{1}{m} \sum_{i=1}^{m} \left( - \sum_{k=1}^{n} (y_i)_k \log((a_i)_k) \right)
+        J(\boldsymbol{\theta}) = \frac{1}{m} \sum_{i=1}^{m} \left( - \sum_{k=1}^{n} (\mathbf{y_i})_k \log(\mathbf{(a_i)}_k) \right)
         $$
         
         Note that this is in fact a generalisation of the binary cross-entropy cost function: since $\mathbf{y_i}$ is a one-hot vector, only one term of the inner summation is non-zero, just as only one of the two terms in the binary cross-entropy is non-zero.
@@ -285,6 +285,8 @@
         
     
     \subsection{Layers and Forward Propagation}
+        
+        % TODO diagrams?
         
         Recall that the motivation behind logistic regression was to find some underlying pattern in the input which characterised the class of that input.
         
@@ -308,20 +310,12 @@
         
         \end{itemize}
         
-        The propagation of the original input through the layers of the network is called \textit{forward propagation}. Note that the activated output of the final layer, $\mathbf{a}^{(L)}$, is considered to be the overall output of the network.
+        The propagation of the original input through the layers of the network is called \textit{forward propagation}. Note that the activated output of the final layer, $\mathbf{a}^{(L)}$, is considered to be the overall output of the network, and it is this output which we wish to produce results similar to our targets $\mathbf{y_i}$. Note also that it is this output which is used in the cost function.
         
         
         
 
     \subsection{Backpropagation}
-        
-        
-        $$ \begin{aligned}
-        J(\theta)
-        &= - \sum_{k=1}^{n} \left( y_k \log(a^{(L)}_k) + (1 - y_k) \log(1 - a^{(L)}_k) \right) \\
-        &= -\mathbf{y}^\top \log(\mathbf{a}^{(L)}) - (\mathbf{1}-\mathbf{y})^\top \log(\mathbf{1} - \mathbf{a}^{(L)})
-        \end{aligned} $$
-        
         
         
         $$
@@ -344,10 +338,10 @@
 
 
 
-        Where we define the "error" of layer $l$ as
+        Where we define the "error" of layer $l$ as $\boldsymbol{\delta}^{(l)}$
     
         $$
-        \mathbf{\delta}^{(l)} :=  \frac{\partial J}{\partial \mathbf{z}^{(l)}} \in \mathbb{R}^{n_l}
+        \delta^{(l)}_j = \frac{\partial J}{\partial z^{(l)}_j}
         $$
         
         The $j$th component of this error vector is a measure of the sensitivity of the cost function $J(\theta)$ to the (weighted) input from neuron $j$ in layer $l$. Although it is \textit{not} a direct measure of how much a particular neuron is at fault for mistakes in the network's eventual output, such an explanation is at least valid intuitively, since all partial derivatives must be zero if the cost function is at a minimum.
@@ -365,14 +359,10 @@
         
         
         
-        % TODO reword this - binary/multiclass?
-        Note that when $J(\theta)$ is the cross-entropy cost function, the error in the final layer $L$ can be calculated as follows:
         
+        We now prove a series of results culminating in Theorem \ref{thm:backprop}, which allows us to calculate the gradient of the cost function $J$ with respect to each weight in each layer of the network. Whenever relevant, we consider the cost for a dataset of size $m = 1$ where the observation has a one-hot target label $\mathbf{y} \in \mathbb{R}^{n_L}$; but note that everything immediately generalises to larger values of $m$, since in all cases differentiation distributes over the outer summation (over $m$).
         
-        
-        
-        In all the following results, we consider the cost for a dataset of size $m = 1$; but note that everything immediately generalises to larger values of $m$, since in all cases differentiation distributes over the outer summation (over $m$).
-        
+        Initially we calculate the error term $\delta^{(L)}_j$ for each neuron in the final layer of the network, for each of the binary and multiclass settings.
         
         
         \begin{lemma}
@@ -384,7 +374,6 @@
             $$
             
         \end{lemma}
-        
         
         \begin{proof}
             
@@ -428,11 +417,7 @@
             \end{aligned} $$
             
         \end{proof}
-        
-        
-        % TODO word nicely
-        We now complete a similar proof for the softmax case.
-        
+
         
         \begin{lemma}
             
@@ -461,7 +446,7 @@
             $$ \begin{aligned}
             \frac{\partial a^{(L)}_i}{\partial z^{(L)}_j}
             &= \frac{\partial}{\partial z^{(L)}_j} \left( \frac{e^{z^{(L)}_i}}{\sum_{k=1}^{n_L} e^{z^{(L)}_k}} \right) \\
-            &= \frac{\left( \frac{\partial \left( e^{z^{(L)}_i}\right)}{\partial z^{(L)}_j} \cdot \sum_{k=1}^{n_L} e^{z^{(L)}_k} \right) - e^{z^{(L)}_i} e^{z^{(L)}_j}}{\left( \sum_{k=1}^{n_L} e^{z^{(L)}_k} \right)^2}
+            &= \frac{\left( \frac{\partial \left( e^{z^{(L)}_i}\right)}{\partial z^{(L)}_j} \sum_{k=1}^{n_L} e^{z^{(L)}_k} \right) - e^{z^{(L)}_i} e^{z^{(L)}_j}}{\left( \sum_{k=1}^{n_L} e^{z^{(L)}_k} \right)^2}
             \end{aligned} $$
             
             \begin{itemize}
@@ -479,7 +464,7 @@
             
                 $$ \begin{aligned}
                 \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j}
-                &= \frac{\left( e^{z^{(L)}_j} \cdot \sum_{k=1}^{n_L} e^{z^{(L)}_k} \right) - \left( e^{z^{(L)}_j} \right)^2}{\left( \sum_{k=1}^{n_L} e^{z^{(L)}_k} \right)^2} \\
+                &= \frac{\left( e^{z^{(L)}_j} \sum_{k=1}^{n_L} e^{z^{(L)}_k} \right) - \left( e^{z^{(L)}_j} \right)^2}{\left( \sum_{k=1}^{n_L} e^{z^{(L)}_k} \right)^2} \\
                 &= \frac{e^{z^{(L)}_j}}{\sum_{k=1}^{n_L} e^{z^{(L)}_k}} \left( 1 - \frac{e^{z^{(L)}_j}}{\sum_{k=1}^{n_L} e^{z^{(L)}_k}} \right) \\
                 &= \sigma(z^{(L)}_j) \left( 1 - \sigma(z^{(L)}_j) \right) \\
                 &= a^{(L)}_j \left( 1 - a^{(L)}_j \right)
@@ -507,10 +492,12 @@
         \end{proof}
     
         
+        We now show some auxiliary results which will come in handy shortly.
         
-        \begin{lemma}
+        
+        \begin{lemma} \label{thm:dz_da}
             
-            For all $i = 1, \ \ldots, \ n_l$ and all $j = 0, \ \ldots, \ n_{l-1}$,
+            For all $i = 1, \ \ldots, \ n_l$ and $j = 0, \ \ldots, \ n_{l-1}$, and all $l = 2, \ldots, L$,
             
             $$
             \frac{\partial z^{(l)}_i}{\partial a^{(l-1)}_j} = \theta^{(l)}_{i,j}
@@ -529,13 +516,80 @@
             \end{aligned} $$
             
         \end{proof}
-        
-        
-        
-        
-        \begin{lemma}
+    
+    
+        \begin{lemma} \label{thm:da_dz}
             
-            For all $i = 1, \ \ldots, \ n_l$ and all $j = 0, \ \ldots, \ n_{l-1}$,
+            For all $i = 1, \ \ldots, \ n_l$ and $j = 0, \ \ldots, \ n_{l-1}$, and all $l = 2, \ldots, L$,
+            
+            $$
+            \frac{\partial a^{(l)}_i}{\partial z^{(l)}_j} = \begin{cases}
+                \sigma'(z^{(l)}_j) & i = j \\
+                0 & i \neq j
+            \end{cases}
+            $$
+            
+        \end{lemma}
+        
+        \begin{proof}
+            
+            Immediate, recalling that $a^{(l)}_i = \sigma(z^{(l)}_i)$.
+            
+        \end{proof}
+        
+        
+        Using the results so far, we can find an expression for $\boldsymbol{\delta}^{(l)}$ in terms of $\boldsymbol{\delta}^{(l+1)}$.
+        
+        
+        \begin{theorem} \label{thm:delta}
+            
+            For $j = 1, \ldots, n_l$, and for $l = 2, \ldots, L-1$,
+            
+            $$
+            \delta^{(l)}_j = \sigma'(z^{(l)}_j) \sum_{i=1}^{n_l} \left( \delta^{(l+1)}_i \theta^{(l+1)}_{i,j} \right)
+            $$
+            
+        \end{theorem}
+    
+        \begin{proof}
+            
+            By the chain rule and the definition of $\boldsymbol{\delta^{(l+1)}}$, notice
+            
+            $$ \begin{aligned}
+            \delta^{(l)}_j
+            &= \frac{\partial J}{\partial z^{(l)}_j} \\
+            &= \sum_{i=1}^{n_{l+1}} \left( \frac{\partial J}{\partial z^{(l+1)}_i} \frac{\partial z^{(l+1)}_i}{\partial z^{(l)}_j} \right) \\
+            &= \sum_{i=1}^{n_{l+1}} \left( \delta^{(l+1)}_i \frac{\partial z^{(l+1)}_i}{\partial z^{(l)}_j} \right)
+            \end{aligned} $$
+            
+            Then considering the remaining differential term, and using the chain rule once again, observe that
+            
+            $$ \begin{aligned}
+            \frac{\partial z^{(l+1)}_i}{\partial z^{(l)}_j}
+            &= \sum_{k=0}^{n_l} \left( \frac{\partial z^{(l+1)}_i}{\partial a^{(l)}_k} \frac{\partial a^{(l)}_k}{\partial z^{(l)}_j} \right) \\
+            &= \sum_{k=0}^{n_l} \left( \theta^{(l+1)}_{i,k} \frac{\partial a^{(l)}_k}{\partial z^{(l)}_j} \right) & \text{by Lemma \ref{thm:dz_da}} \\
+            &= \theta^{(l+1)}_{i,j} \sigma'(z^{(l)}_j) & \text{by Lemma \ref{thm:da_dz}}
+            \end{aligned} $$
+            
+            Therefore combining these results, we have that
+            
+            $$ \begin{aligned}
+            \delta^{(l)}_j
+            &= \sum_{i=1}^{n_{l+1}} \left( \delta^{(l+1)}_i \theta^{(l+1)}_{i,j} \sigma'(z^{(l)}_j) \right) \\
+            &= \sigma'(z^{(l)}_j) \sum_{i=1}^{n_l} \left( \delta^{(l+1)}_i \theta^{(l+1)}_{i,j} \right)
+            \end{aligned} $$
+            
+        \end{proof}
+    
+    
+        This result is the core of the infamous \textit{backpropagation} algorithm, widely used since its popularisation in the 1980s \cite{hinton_backprop} and so called because it allows the error of each layer to be efficiently calculated using the following layer's error.
+        
+        We require one more auxiliary result before we can fully derive the derivative of $J$ with respect to each parameter in the network.
+        
+        
+        \begin{lemma} \label{thm:dz_dtheta}
+            
+            For all $i = 1, \ \ldots, \ n_l$ and $j = 0, \ \ldots, \ n_{l-1}$, and all $l = 2, \ldots, L$,
             
             $$
             \frac{\partial z^{(l)}_p}{\partial \theta^{(l)}_{i,j}} = \begin{cases}
@@ -561,11 +615,12 @@
         \end{proof}
         
         
+        We now have all the results we need to achieve our goal.
         
         
-        \begin{theorem}
+        \begin{theorem} \label{thm:backprop}
             
-            For all $i = 1, \ \ldots, \ n_l$ and all $j = 0, \ \ldots, \ n_{l-1}$,
+            For all $i = 1, \ \ldots, \ n_l$ and $j = 0, \ \ldots, \ n_{l-1}$, and all $l = 2, \ldots, L$,
             
             $$
             \frac{\partial J}{\partial \theta^{(l)}_{i,j}} = \delta^{(l)}_i a^{(l-1)}_j
@@ -575,7 +630,7 @@
         
         \begin{proof}
         
-            Using the chain rule, the definition of $\boldsymbol{\delta}^{(l)}$ and the results from the previous lemmas,
+            Using the chain rule, the definition of $\boldsymbol{\delta}^{(l)}$ and the result from Lemma \ref{thm:dz_dtheta},
             
             $$ \begin{aligned}
             \frac{\partial J}{\partial \theta^{(l)}_{i,j}}
@@ -586,6 +641,8 @@
         
         \end{proof}
         
+        
+        Thus with the combination of Theorems \ref{thm:delta} and \ref{thm:backprop}, we now have an efficient means of calculating the derivative of the cost function $J$ with respect to every weight in the network; and these derivatives will allow us to minimise $J$ using any first-order gradient method, such as gradient descent.
         
 
 
