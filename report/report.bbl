@@ -16,7 +16,7 @@ Y.~LeCun, L.~Bottou, G.~Orr and K.~Muller.
 \bibitem{line_search}
 P.~Stanimirovic and M.~Miladinovic.
 \newblock Accelerated gradient descent methods with line search.
-\newblock In {\em Numerical Algorithms} 54:503-520, 2010.
+\newblock In {\em Numerical Algorithms} 54:503-520, Springer, 2010.
 
 
 \bibitem{adam}
