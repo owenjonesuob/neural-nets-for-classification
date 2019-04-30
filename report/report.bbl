@@ -31,6 +31,12 @@ A.~Thomas and C. Kaltschmidt.
 \newblock In {\em Memristor Networks}, Springer, 2014.
 
 
+\bibitem{hinton_backprop}
+D.~Rumelhart, G.~Hinton and R. Williams.
+\newblock Learning representations by back-propagating errors.
+\newblock In {\em Nature} 323:533-536, 1986.
+
+
 \bibitem{kmnist}
 T.~Clanuwat et~al.
 \newblock Deep Learning for Classical Japanese Literature.
