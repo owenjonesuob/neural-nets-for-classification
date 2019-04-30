@@ -144,7 +144,7 @@
         Dissuading specificity
         
         
-    \subsection{Training}
+    \subsection{Training} \label{sec:gradient_descent}
         
         As described at the end of Section \ref{sec:costfun}, the goal of the \textit{training} process is to minimise the cost function $J(\boldsymbol{\theta})$ by making changes to the parameters $\boldsymbol{\theta}$: in other words, we essentially have an optimisation problem, which we can tackle in countless different ways.
         
@@ -208,6 +208,8 @@
             
             
             % TODO summarise
+            
+    \subsection{Assessing Performance}
         
 
 
@@ -616,15 +618,48 @@
 
     \subsection{Improvements to Training}
         
+        In Section \ref{sec:gradient_descent} we discussed the update to be made to the weights in the logistic regression model - concretely, a step in the direction of steepest descent $\nabla J(\boldsymbol{\theta})$. If we consider $\boldsymbol{\theta}$ to be a concatenated vector of the unrolled weight matrices, i.e.
         
-        \subsubsection{Stochastic Gradient Descent}
+        $$
+        \boldsymbol{\theta} = \left( \theta^{(2)}_{1,1}, \ \theta^{(2)}_{1,2}, \ \ldots, \ \theta^{(L)}_{n_L, (n_{L-1}+1)} \right)
+        $$
+        
+        then we can use gradient descent as the basis for the training process of the neural network too.
+        
+        However, since there are vastly more weights in even a small neural network than in the logistic regression model, it will take a significantly longer amount of time to calculate the descent direction $\Delta \boldsymbol{\theta}$ at each iteration; and the potential for the model to overfit the training data is also greatly increased, due to the larger number of degrees of freedom in the model.
+        
+        Some measures can however be taken in order to mitigate such issues, such as those described in the following subsections.        
+        
+        
+        \subsubsection{Mini-Batch Gradient Descent}
+            
+            \textit{epoch}
+            
+            
+            
         
         \subsubsection{Validation and Testing}
-
+            
+            To reduce the likelihood that we overfit our model to the dataset, it is good practice to split the available data into separate \textit{training and validation sets}. The model is trained and the weights updated based on the training set; and then its performance on the validation set is assessed. Hyperparameters are adjusted to give optimal results on the validation set. Since the validation data is not used to update the weights in the network, this process should hopefully produce a model which generalises better to unseen data.
+            
+            The simplest implementation is \textit{holdout cross-validation}: some proportion of the available dataset is "held out" as the validation set for the duration of the training process. A more robust extension is \textit{$k$-fold cross-validation}: the available dataset is split into $k$ approximately equally-sized sections, and the training process is repeated $k$ times, where each section of the data in turn is considered as the validation set while the remaining sections form the training set. The performance metric from each of the $k$ repetitions can be somehow combined (usually averaged) to produce an overall value.
+            
+            As a final measure, it is usually sensible to split the available data still further - into training, validation sets and a \textit{test} set, which remains isolated and unused until all training and hyperparameter tuning is completed. The model's performance on this test set is as reliable an indicator as we can achieve of how well the model will perform on unseen data.
+            
 
 
         \subsubsection{Early Stopping}
-
+            
+            One major potential cause of overfitting and wasted training effort is \textit{overtraining}, where the network is forced to complete a fixed number of training epochs despite the fact that additional training may have no benefits after a certain point. \textit{Early stopping methods} try to prevent this by terminating the training process as soon as certain "stopping criteria" are met.
+            
+            The most widely used such method is \textit{validation-based early stopping}. While there are no hard-and-fast rules, many approaches have proven to be useful in practice \cite{early_stopping}.
+            
+            In the implementation used in Section \ref{sec:demos}, early stopping is controlled by a criterion based on the third class of criteria introduced in Section 2.2.1 of \cite{early_stopping}. A window of $s$ iterations is considered: if the average validation cost from the most recent $s$ epochs is higher than the average validation cost from the preceding $s$ epochs, then training terminates and the weights are set to the values they held when validation cost was at its lowest. The width of the window $s$ is a hyperparameter of the network which usually requires some tuning for the best results: too small a value might cause premature termination due to variation caused by stochastic weight updates, whereas too large a value might result in many redundant iterations taking place after the optimal weights were found.
+            
+            
+            % TODO plot
+            
+            
 
 
 
