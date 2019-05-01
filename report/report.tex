@@ -143,6 +143,8 @@
         
         Dissuading specificity
         
+        \textit{overfitting}
+        
         
     \subsection{Training} \label{sec:gradient_descent}
         
@@ -211,6 +213,9 @@
             
     \subsection{Assessing Performance}
         
+        % TODO
+        
+        balanced classes so accuracy is okay for us here
 
 
 
@@ -334,7 +339,7 @@
         Initially we calculate the error term $\delta^{(L)}_j$ for each neuron in the final layer of the network, for each of the binary and multiclass settings.
         
         
-        \begin{lemma}
+        \begin{lemma} \label{thm:init_sigmoid}
             
             If $J_2$ is the binomial cross-entropy cost function, and $\sigma_2$ is the sigmoid activation function, then for all $j = 1, \ \ldots, \ n_L$
             
@@ -388,7 +393,7 @@
         \end{proof}
 
         
-        \begin{lemma}
+        \begin{lemma} \label{thm:init_softmax}
             
             If $J$ is the multiclass cross-entropy cost function, and $\sigma$ is the softmax activation function, then for all $j = 1, \ \ldots, \ n_L$
             
@@ -611,7 +616,7 @@
         \end{proof}
         
         
-        Thus with the combination of Theorems \ref{thm:delta} and \ref{thm:backprop}, we now have an efficient means of calculating the derivative of the cost function $J$ with respect to every weight in the network; and these derivatives will allow us to minimise $J$ using any first-order gradient method, such as gradient descent.
+        Thus with the combination of Theorems \ref{thm:delta} and \ref{thm:backprop}, and the starting value provided by either Lemma \ref{thm:init_sigmoid} or \ref{thm:init_softmax}, we now have an efficient means of calculating the derivative of the cost function $J$ with respect to every weight in the network; and these derivatives will allow us to minimise $J$ using any first-order gradient method, such as gradient descent.
         
 
 
@@ -632,6 +637,7 @@
         
         
         \subsubsection{Mini-Batch Gradient Descent}
+            
             
             \textit{epoch}
             
