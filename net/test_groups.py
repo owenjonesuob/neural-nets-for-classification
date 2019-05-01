@@ -43,7 +43,7 @@ utils.plot_boundaries(model, X, y, subdivs=150)
 
 # Split the dataset to show off validation curves and early stopping
 
-X_train, y_train, X_val, y_val = utils.make_sets(X, y, [0.8, 0.2])
+X_train, y_train, X_val, y_val = utils.make_sets(X, y, [0.75, 0.25])
 
 model = Network(layers = [
     Input(2),
@@ -61,7 +61,7 @@ utils.plot_boundaries(model, X, y, subdivs=150)
 np.random.seed(101)
 
 X, y = make_blobs(5000, 2, 4, center_box=(10, 30))
-X_train, y_train, X_val, y_val = utils.make_sets(X, y, [0.8, 0.2])
+X_train, y_train, X_val, y_val = utils.make_sets(X, y, [0.75, 0.25])
 
 X_train = utils.scale_minmax(X_train)
 X_val = utils.scale_minmax(X_val)
