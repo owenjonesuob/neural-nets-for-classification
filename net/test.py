@@ -2,18 +2,33 @@ import numpy as np
 from network import *
 from layers import *
 import utils
-#from netbp import netbp
+
+import matplotlib.pyplot as plt
+plt.style.use(["seaborn-paper", "seaborn-white"])
+plt.rcParams["image.cmap"] = "viridis"
 
 from sklearn.datasets import make_blobs, make_moons
-import matplotlib.pyplot as plt
 
+# Moons!
+np.random.seed(101)
 
 X, y = make_moons(10000, noise=0.1)
 X = utils.scale_minmax(X)
-print(X.max(), X.min())
 plt.scatter(X[:, 0], X[:, 1], c=y)
 plt.show()
 
+# Logistic regression
+
+model = Network(layers = [
+    Input(2),
+    Dense(2, 2, "sigmoid")
+])
+
+success = model.train(X, y, epochs=400, batch_size=512, learning_rate=10, penalty=0)
+utils.plot_cost_curves(model, val_curve=False)
+utils.plot_boundaries(model, X, y, subdivs=150)
+
+# Smallish neural network, with same hyperparams
 
 model = Network(layers = [
     Input(2),
@@ -26,28 +41,24 @@ success = model.train(X, y, epochs=400, batch_size=512, learning_rate=10, penalt
 utils.plot_cost_curves(model, val_curve=False)
 utils.plot_boundaries(model, X, y, subdivs=150)
 
-cv_acc = model.cross_validate(X, y, folds=10, val_prop=0.2, epochs=400, batch_size=512, learning_rate=10, penalty=0)
-print("Crossval accuracy:", cv_acc)
-
-
+# Split the dataset to show off validation curves and early stopping
 
 X_train, y_train, X_val, y_val = utils.make_sets(X, y, [0.8, 0.2])
 
 model = Network(layers = [
     Input(2),
-    Dense(2, 10, "sigmoid"),
-    Dense(10, 4, "sigmoid"),
-    Dense(4, 2, "sigmoid")
+    Dense(2, 20, "sigmoid"),
+    Dense(20, 4, "sigmoid"),
+    Dense(4, 2, "softmax")
 ])
 
-success = model.train(X_train, y_train, X_val, y_val, epochs=500, batch_size=256, learning_rate=10, penalty=0)
+success = model.train(X_train, y_train, X_val, y_val, epochs=2000, batch_size=256, learning_rate=10, penalty=0.01, early_stopping=150)
 utils.plot_cost_curves(model)
 utils.plot_boundaries(model, X, y, subdivs=150)
 
 
-
-
-#X, y = make_blobs(10000, 2, 4)
+# Blobs!
+np.random.seed(101)
 
 X, y = make_blobs(5000, 2, 4, center_box=(10, 30))
 X_train, y_train, X_val, y_val = utils.make_sets(X, y, [0.8, 0.2])
@@ -65,12 +76,7 @@ model2 = Network(layers = [
     Dense(10, 4, "softmax")
 ])
 
-
-success = model2.train(X_train, y_train, X_val, y_val, epochs=1000, batch_size=128, learning_rate=1, penalty=0.1)
+success = model2.train(X_train, y_train, X_val, y_val, epochs=500, batch_size=128, learning_rate=1, penalty=0.1, early_stopping=100)
 utils.plot_cost_curves(model2)
 utils.plot_boundaries(model2, X_train, y_train, subdivs=100)
 utils.plot_boundaries(model2, X_val, y_val, subdivs=100)
-
-
-#cv_acc = model2.cross_validate(X, y, folds=10, val_prop=0.2, epochs=1000, batch_size=128, learning_rate=1, penalty=0.1)
-#print("Crossval accuracy:", cv_acc)
