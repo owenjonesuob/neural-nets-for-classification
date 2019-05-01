@@ -121,7 +121,7 @@ class Network(object):
     
 
 
-    def train(self, train_data, train_labels, val_data=None, val_labels=None, epochs=100, batch_size=128, learning_rate=0.1, penalty=0, early_stopping=100, verbose=True):
+    def train(self, train_data, train_labels, val_data=None, val_labels=None, epochs=100, batch_size=128, learning_rate=0.1, penalty=0, early_stopping=0, verbose=True):
 
         train_cost = self.get_cost(train_data, train_labels, penalty)
         self.train_cost_history = np.empty(epochs+1)
