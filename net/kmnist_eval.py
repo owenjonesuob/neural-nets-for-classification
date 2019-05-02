@@ -11,6 +11,7 @@ np.random.seed(101)
 
 # https://www.kaggle.com/anokas/kuzushiji
 
+
 kmnist_test_imgs = np.load("../data/kmnist-test-imgs.npz")["arr_0"]
 kmnist_test_imgs = utils.scale_minmax(kmnist_test_imgs.reshape(-1, 784))
 
@@ -46,15 +47,12 @@ fig.subplots_adjust(top=0.82, left=0.15)
 for row in range(n_classes):
 
     # Add axis labels
-    # axs[row][0].set_ylabel(labels_dict.get(row), fontname="Yu Mincho", fontsize=14, rotation=0)
-    # axs[0][row].set_xlabel(labels_dict.get(row), fontname="Yu Mincho", fontsize=14)
-    # axs[0][row].xaxis.set_label_position("top")
-
     p_pos = axs[row][0].get_position()
     fig.text(p_pos.x0 - 0.07, p_pos.y0 + 0.01, labels_dict.get(row), fontname="Yu Mincho", fontsize=18)
     
     a_pos = axs[0][row].get_position()
     fig.text(a_pos.x0 + 0.01, a_pos.y1 + 0.05, labels_dict.get(row), fontname="Yu Mincho", fontsize=18)
+
 
     # Get indexes of images classified with that label
     p_idxs = [i for i, x in enumerate(model.predict(kmnist_test_imgs)) if x == row]
@@ -76,6 +74,7 @@ for row in range(n_classes):
             plt.imshow(kmnist_test_imgs[to_plot, :].reshape(28, 28), origin="upper")
             plt.axis("off")
 
+# Add figure labels
 fig.text(0.05, 0.5, "Predicted class", ha="center", va="center", fontsize=12, rotation="vertical")
 fig.text(0.5, 0.95, "Actual class", ha="center", va="center", fontsize=12)
 
