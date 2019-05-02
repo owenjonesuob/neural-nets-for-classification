@@ -34,8 +34,10 @@ model.load_weights("val_weights.npy")
 
 
 # Final score
-test_preds = model.predict(kmnist_test_imgs)
 print("Test accuracy:", model.get_accuracy(kmnist_test_imgs, kmnist_test_labs))
+
+# Confusion matrix
+print("Confusion matrix:\n", utils.confusion_matrix(model.predict(kmnist_test_imgs), kmnist_test_labs))
 
 
 # "Confusion plot"
