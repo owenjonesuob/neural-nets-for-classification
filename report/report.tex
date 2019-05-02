@@ -48,43 +48,48 @@
 
 \section{Logistic Regression} \label{sec:logreg}
 
-    % TODO
+    Consider any question where the answer is either "yes" or "no". Will the next train arrive on time? Does this image contain a face? Should we prescribe this patient Drug B instead of Drug A? In this way, many problems in the real world can be reduced in essence to a \textit{binary classification} task, where the "correct" answer belongs to one of two distinct categories.
 
-    $y$ binary output (0 or 1)
+    Therefore if we wish to produce a model capable of performing classification tasks, a useful starting point would be a binary classifier: that is, we would like to produce a model $f$ which, given some observation $\mathbf{x}$ with an associated label $y \in \{0, \ 1\}$, produces a result such that
+    
+    $$
+    f(\mathbf{x}) \approx y \,.
+    $$
+    
+    This section outlines the motivation behind and the definition of one of the best-known binary classifiers, the \textit{logistic regression} model.
 
 
     \subsection{Linear Regression}
         
-        % TODO intro needs work
-        The underlying assumption is always that the output occurs as a result of some combination of inputs.
+        A reasonable assumption when beginning to define a model is that the class of the observation is somehow related to its features - if that is not the case, then we will struggle to extract any meaningful information from the data available to us!
         
-        Mathematically speaking, suppose we have an observation $\mathbf{x}$ consisting of $n \geq 1$ inputs:
-        
-        $$
-        \mathbf{x} = (x_1, \ x_2, \ \ldots, \ x_{n-1}, \ x_n) \in \mathbb{R}^n
-        $$
-        
-        Then we assume that there exists a corresponding set of weights $\boldsymbol{\theta} = (\theta_0, \ldots, \theta_n) \in \mathbb{R}^{n+1}$ such that
+        Therefore suppose we have an observation $\mathbf{x}$ consisting of $n \geq 1$ inputs:
         
         $$
-        z = \theta_0 + \sum_{k=1}^n \theta_k x_k
+        \mathbf{x} = (x_1, \ x_2, \ \ldots, \ x_{n-1}, \ x_n) \in \mathbb{R}^n \,.
         $$
         
-        To simplify notation later on, we can augment $\mathbf{x}$ with $x_0 = 1$ allowing us to write $z$ as a single summation:
+        Let us define a set of weights $\boldsymbol{\theta} = (\theta_0, \ldots, \theta_n) \in \mathbb{R}^{n+1}$ which in combination with $\mathbf{x}$ produce a scalar output
         
         $$
-        z = \sum_{k=0}^n \theta_k x_k = \boldsymbol{\theta}^\top \mathbf{x}
+        z = \theta_0 + \sum_{k=1}^n \theta_k x_k \,.
         $$
         
-        By adjusting the weights $\theta_0, \ldots, \theta_n$, different values of the output $z$ can be produced. Note that if we do not restrict $\boldsymbol{\theta}$ then $z$ is unbounded, i.e. $z \in (-\infty, \infty)$.
+        Notice the additional \textit{bias} weight $\theta_0$, which corresponds to a shift in the output independent of any of the inputs. To simplify notation later on, we can redefine $\mathbf{x} \in \mathbb{R}^{n+1}$ by augmenting with $x_0 = 1$, which allows us to write $z$ as a single summation:
+        
+        $$
+        z = \sum_{k=0}^n \theta_k x_k = \boldsymbol{\theta}^\top \mathbf{x} \,.
+        $$
+        
+        By adjusting the weights $\theta_0, \ldots, \theta_n$, the same inputs $\mathbf{x}$ can give us a completely different output. Note that if we do not restrict $\boldsymbol{\theta}$ then $z$ is unbounded, i.e. $z \in (-\infty, \infty)$.
         
         
         
-    \subsection{Introducing Nonlinearity}
+    \subsection{Introducing Non-Linearity}
         
         Recall that the goal of a binary classification task is to assign a categorical label to each observation; so if we wish to use linear regression as the basis for our algorithm, ultimately we will need to somehow interpret the continuous output $z \in \mathbb{R}$ as corresponding to one of those discrete labels.
         
-        This can be achieved by means of a nonlinear \textit{activation function}:
+        This can be achieved by means of a non-linear \textit{activation function}:
         
         $$
         \sigma \colon (-\infty, \infty) \to (0, 1) \,.
@@ -208,7 +213,7 @@
         
         The problems we will consider in Section \ref{sec:demos} of this paper will use data with \textit{balanced classes}, where an identical (or very similar) proportion of the data belongs to each class. This means it is reasonable for us to use accuracy as our performance metric, since poor performance on any class will affect the overall accuracy evenly.
         
-        Consider, however, a case of imbalanced classes - say 90\% of observations belonging to one, and 10\% to another. A model which simply predicts that every observation belongs to the first class would achieve 90\% accuracy without serving any useful purpose at all! Therefore many other performance metrics have been developed (perhaps most famously, \textit{precision}, \textit{recall} and \textit{$F_1$ score}) which penalise mistakes differently, depending on their significance.
+        Consider, however, a case of imbalanced classes - say 90\% of observations belonging to one, and 10\% to another. A model which simply predicts that every observation belongs to the first class would achieve 90\% accuracy without serving any useful purpose at all! Therefore many other performance metrics have been developed (perhaps most famously, \textit{precision}, \textit{recall} and \textit{$F_1$ score}) which penalise mistakes differently, depending on their perceived significance.
         
 
 
@@ -264,7 +269,7 @@
             
             $$ \begin{aligned}
                 \sigma(\bar{z}_j)
-                &= \frac{e^{\bar{z}_j}}{\sum_{k=1}^{n} e^{\bar{z}_k}}
+                &= \frac{e^{\bar{z}_j}}{\sum_{k=1}^{n} e^{\bar{z}_k}} \\
                 &= \frac{e^{z_j - c}}{\sum_{k=1}^{n} e^{z_k - c}} \\
                 &= \frac{e^{-c} e^{z_j}}{\sum_{k=1}^{n} e^{-c} e^{z_k}} \\
                 &= \frac{e^{z_j}}{\sum_{k=1}^{n} e^{z_k}} \\
