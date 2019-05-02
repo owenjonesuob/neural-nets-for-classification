@@ -8,9 +8,9 @@ plt.style.use(["seaborn-paper", "seaborn-white"])
 plt.rcParams["image.cmap"] = "viridis"
 
 
-# "Dodgy" overfitting data
+# "Dodgy" data
 
-np.random.seed(123)
+np.random.seed(101)
 
 n = 250
 X = np.random.uniform(0, 1, (n, 2))
@@ -53,16 +53,11 @@ success = model.train(X_train, y_train, X_val, y_val, epochs=10000, batch_size=1
 utils.plot_cost_curves(model)
 utils.plot_boundaries(model, X_val, y_val)
 
-# ... and finally adding a regularisation penalty too!
-model.reset()
-success = model.train(X_train, y_train, X_val, y_val, epochs=10000, batch_size=128, learning_rate=10, penalty=0.1, early_stopping=200)
-utils.plot_cost_curves(model)
-utils.plot_boundaries(model, X_val, y_val)
 
 
 # "Islands" data
 
-np.random.seed(123)
+np.random.seed(101)
 
 n = 500
 X = np.random.uniform(0, 1, (n, 2))

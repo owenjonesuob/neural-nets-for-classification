@@ -76,7 +76,7 @@ model2 = Network(layers = [
     Dense(10, 4, "softmax")
 ])
 
-success = model2.train(X_train, y_train, X_val, y_val, epochs=500, batch_size=128, learning_rate=1, penalty=0.1, early_stopping=100)
+success = model2.train(X_train, y_train, X_val, y_val, epochs=500, batch_size=128, learning_rate=10, penalty=0.05, early_stopping=50)
 utils.plot_cost_curves(model2)
 utils.plot_boundaries(model2, X_train, y_train, subdivs=100)
 utils.plot_boundaries(model2, X_val, y_val, subdivs=100)
