@@ -63,7 +63,7 @@ model = Network(layers = [
     Dense(30, 10, "softmax")
 ])
 
-model.reset()
+print("Pre-training validation accuracy:", model.get_accuracy(X_train, y_train))
 success = model.train(X_train, y_train, X_val, y_val, epochs=1000, batch_size=256, learning_rate=10, penalty=0.12, early_stopping=30)
 model.save_weights("val_weights.npy")
 
