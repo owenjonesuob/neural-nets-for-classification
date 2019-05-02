@@ -202,9 +202,14 @@
             
     \subsection{Assessing Performance}
         
-        % TODO
+        When developing a model, it is essential to know how well the model is performing - both in terms of relating the output back to the original input data, and for the purpose of comparing the performance different models. This implies that we will require at least one \textit{performance metric}, which somehow quantifies how well the model is completing the task at hand.
         
-        balanced classes so accuracy is okay for us here
+        Arguably the simplest such metric is \textit{accuracy}, i.e. the proportion of observations which the network predicts correctly as belonging to their associated class. Accuracy is measured on a scale of 0 to 1, where 0 corresponds to a model which predicts everything incorrectly and 1 corresponds to every observation being classified correctly.
+        
+        The problems we will consider in Section \ref{sec:demos} of this paper will use data with \textit{balanced classes}, where an identical (or very similar) proportion of the data belongs to each class. This means it is reasonable for us to use accuracy as our performance metric, since poor performance on any class will affect the overall accuracy evenly.
+        
+        Consider, however, a case of imbalanced classes - say 90\% of observations belonging to one, and 10\% to another. A model which simply predicts that every observation belongs to the first class would achieve 90\% accuracy without serving any useful purpose at all! Therefore many other performance metrics have been developed (perhaps most famously, \textit{precision}, \textit{recall} and \textit{$F_1$ score}) which penalise mistakes differently, depending on their significance.
+        
 
 
 
