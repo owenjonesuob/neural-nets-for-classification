@@ -196,11 +196,9 @@
                 \end{algorithmic}
             
             \end{algorithm}
-                    
-                
             
             
-            % TODO summarise
+    
             
     \subsection{Assessing Performance}
         
@@ -212,10 +210,11 @@
 
 \section{Neural Networks}
     
-    % TODO
-    Blah blah blah.
+    The logistic regression model is, by definition, a \textit{linear classifier}: the output is directly linked (via the sigmoid function) to the weighted sum of the inputs. Since we are using such a model for binary classification, we set some threshold (generally 0.5 for sigmoid) such that all outputs above the threshold are mapped to one class, and all outputs below are mapped to the other. We can thus think of the decision boundary as a hyperplane which divides the problem's feature space into two halves.
     
-    % TODO Mention single-neuron non-activated output for regression?
+    However, such a linear boundary may not be particularly suitable - the classes may not be linearly separable, meaning we could never achieve perfect accuracy with our model. Moreover we are only able to distinguish between binary-labelled data, which is not particularly useful if our observations can belong to more than two classes.
+    
+    Hence we would like to extend our logistic regression model, to allow for an arbitrary number of outputs to be predicted and for the construction of potentially non-linear decision boundaries.
     
     
 
@@ -244,7 +243,7 @@
         \sigma(z_j) = \frac{e^{z_j}}{\sum_{k=1}^{n} e^{z_k}} \,.
         $$
         
-        Since this is a normalisation of the exponentiated raw output $\mathbf{z}$, the elements of the resulting vector $\mathbf{a}$ sum to 1; and therefore each of these $n$ values can be interpreted as the probability of $x$ belonging to that class.
+        Since this is a normalisation of the exponentiated raw output $\mathbf{z}$, the elements of the resulting vector $\mathbf{a}$ sum to 1; and therefore each of these $n$ values can be interpreted as the probability of $x$ belonging to that class. The prediction of the model will simply be the class corresponding to the highest probability.
         
         Note the following useful property of the softmax function: 
         
