@@ -26,7 +26,7 @@ def make_sets(data, labels, props, shuffle=True):
 
 
 def scale_minmax(data):
-    scaled = np.amax(data, axis=0) - data
+    scaled = data - np.amin(data, axis=0)
     scaled = scaled / (np.amax(data, axis=0) - np.amin(data, axis=0))
     return scaled
 
