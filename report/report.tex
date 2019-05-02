@@ -641,7 +641,7 @@
                 
                 \item The cost of every single observation in the dataset must be calculated before any update is made to the model's weights. This is potentially computationally expensive.
                 
-                \item The update which \textit{is} eventually made \textit{always} results in a smaller value of $J$. However, since $J$ is as a rule not a convex function, there are multiple minima; and by always moving in a strict descent direction, we risk converging to a "sharp minimum" where the weights we learn will give a model which does not generalise well to unseen data \cite{large_batch}.
+                \item The update which \textit{is} eventually made \textit{always} results in a smaller value of $J$. However, since $J$ is as a rule not a convex function, there are multiple minima; and by always moving in a strict descent direction, we risk converging to a "sharp minimum" where the weights we learn will define a model which does not generalise well to unseen data \cite{large_batch}.
                 
             \end{itemize}
             
@@ -651,7 +651,7 @@
             \Delta \boldsymbol{\theta} = - \nabla J(\boldsymbol{\theta}) \big\vert_{\mathcal{S}_i} = - \left( \frac{1}{\lvert \mathcal{S}_i \rvert} \sum_{k \in \mathcal{S}_i} CE(a^{(L)}_k, y_k \ \vert \ \boldsymbol{\theta}) \right) \,.
             $$
             
-            This stochastic gradient is essentially a "noisy" version of the true gradient $- \nabla J(\boldsymbol{\theta})$. Therefore if after a certain iteration we are sitting in a sharp minimum of the cost function, then by making an update to the weights based on the stochastic gradient we are likely to jump out of this minimum (since it is quite possible that it doesn't even exist in the stochastic version of the cost function surface). Therefore when using stochastic gradient descent we tend to converge to "flat" minima, where the performance of the model is usually close to its performance at the global minimum and where the model generalises well to unseen data \cite{loss_surfaces}
+            This stochastic gradient is essentially a "noisy" version of the true gradient $- \nabla J(\boldsymbol{\theta})$. Therefore if after a certain iteration we are sitting in a sharp minimum of the cost function, then by making an update to the weights based on the stochastic gradient we are likely to jump out of this minimum (since it is quite possible that it doesn't even exist in the stochastic version of the cost function surface). Therefore when using stochastic gradient descent we tend to converge to "flat" minima, where the performance of the model is usually close to its performance at the global minimum and where the model generalises well to unseen data \cite{loss_surfaces}.
             
             The number of observations belonging to $\mathcal{S}_i$ becomes a \textit{hyperparameter} of the model (so called because the weights of the model are the standard parameters). This value, and the values of other hyperparameters which we will meet shortly, is chosen when setting up the training process.
             
@@ -671,17 +671,22 @@
             
             
         \subsubsection{Regularisation}
-        
-            % TODO
             
-            Dissuading specificity
-        
-        
-        
-
+            Another typical symptom of overfitting is the interpretation of noise in the training dataset as patterns, and consequent updates being made to the model's weights such that this noise becomes significant in how the model classifies an observation. In that situation, small variation in a few specific inputs can lead to a massive change in the model's output, while the remaining inputs are largely unconsidered.
             
-
-
+            This is achieved by adding some \textit{regularisation term} $R(\boldsymbol{\theta})$ to the cost function which dissuades large weight values. One of the most widely-used regularisation methods is \textit{$L_2$-regularisation} (sometimes called \textit{ridge regression}), where the regularisation term is the $L_2$ norm of the weight vector, scaled by some constant $\lambda$. Then our cost function becomes
+            
+            $$
+            J(\boldsymbol{\theta}) = \frac{1}{m} \sum_{i=1}^{m} \left( - \sum_{k=1}^{n} (\mathbf{y_i})_k \log(\mathbf{(a_i)}_k) \right) + \frac{\lambda}{2} \sum_j \theta_j^2 \,,
+            $$
+            
+            and notice that the differential of the new term with respect to each $\theta_j$ is simple to calculate - so during the backpropagation calculations we will now have
+            
+            $$
+            \frac{\partial J}{\partial \theta^{(l)}_{i,j}} = \delta^{(l)}_i a^{(l-1)}_j + \lambda \theta^{(l)}_{i,j} \,.
+            $$
+            
+        
         \subsubsection{Early Stopping}
             
             One major potential cause of overfitting and wasted training effort is \textit{overtraining}, where the network is forced to complete a fixed number of training epochs despite the fact that additional training may have no benefits after a certain point. \textit{Early stopping methods} try to prevent this by terminating the training process as soon as certain "stopping criteria" are met.
