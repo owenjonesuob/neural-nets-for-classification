@@ -1,4 +1,5 @@
-# MA30128: Project
+# Neural Networks for Classification
 
-Neural networks yay!
+#### Spring 2019
 
+More information to be provided shortly.
