@@ -46,6 +46,7 @@
     In Section \ref{sec:demos} of this paper, the 
 
 
+
 \section{Logistic Regression} \label{sec:logreg}
 
     Consider any question where the answer is either "yes" or "no". Will the next train arrive on time? Does this image contain a face? Should we prescribe this patient Drug B instead of Drug A? In this way, many problems in the real world can be reduced in essence to a \textit{binary classification} task, where the "correct" answer belongs to one of two distinct categories.
@@ -57,6 +58,7 @@
     $$
     
     This section outlines the motivation behind and the definition of one of the best-known binary classifiers, the \textit{logistic regression} model.
+
 
 
     \subsection{Linear Regression}
@@ -149,6 +151,7 @@
         Here we will focus on \textit{gradient descent}, an iterative method which takes successive steps converging towards a minimum optimal value. Although many other more sophisticated optimisation algorithms exist, gradient descent is one of the most commonly used optimisation methods due to its simplicity yet relative effectiveness: see \cite{lecun_backprop} for further details.
         
         
+        
         \subsubsection{Descent Direction}
             
             Since we wish to reduce $J(\boldsymbol{\theta})$ by taking some step in parameter space, before doing anything else we must determine the direction in which to take that step.
@@ -204,7 +207,6 @@
             
             
     
-            
     \subsection{Assessing Performance}
         
         When developing a model, it is essential to know how well the model is performing - both in terms of relating the output back to the original input data, and for the purpose of comparing the performance different models. This implies that we will require at least one \textit{performance metric}, which somehow quantifies how well the model is completing the task at hand.
@@ -215,7 +217,6 @@
         
         Consider, however, a case of imbalanced classes - say 90\% of observations belonging to one, and 10\% to another. A model which simply predicts that every observation belongs to the first class would achieve 90\% accuracy without serving any useful purpose at all! Therefore many other performance metrics have been developed (perhaps most famously, \textit{precision}, \textit{recall} and \textit{$F_1$ score}) which penalise mistakes differently, depending on their perceived significance.
         
-
 
 
 \section{Neural Networks}
@@ -290,7 +291,6 @@
         
         
         
-    
     \subsection{Layers and Forward Propagation}
         
         % TODO diagrams?
@@ -320,8 +320,7 @@
         The propagation of the original input through the layers of the network is called \textit{forward propagation}. Note that the activated output of the final layer, $\mathbf{a}^{(L)}$, is considered to be the overall output of the network, and it is this output which we wish to produce results similar to our targets $\mathbf{y_i}$. Note also that it is this output which is used in the cost function.
         
         
-        
-
+    
     \subsection{Backpropagation}
         
         Just as in the logistic regression model described in Section \ref{sec:logreg}, when training our model we wish to minimise the cost function $J$ by adjusting the weights in the model. The difference now is that we have multiple layers of neurons, only the last of which is directly connected to the network's output $\mathbf{a}^{(L)}$; and therefore if we still wish to use some gradient-based optimisation method to update the weights, we will need to determine way of calculating $\frac{\partial J}{\partial \theta^{(l)}_{i,j}}$, i.e. the derivative of the cost function with respect to each individual weight in the network.
@@ -618,8 +617,7 @@
         
         Thus with the combination of Theorems \ref{thm:delta} and \ref{thm:backprop}, and the starting value provided by either Lemma \ref{thm:init_sigmoid} or \ref{thm:init_softmax}, we now have an efficient means of calculating the derivative of the cost function $J$ with respect to every weight in the network; and these derivatives will allow us to minimise $J$ using any first-order gradient method, such as gradient descent.
         
-
-
+        
 
     \subsection{Improvements to Training}
         
@@ -636,6 +634,7 @@
         Moreover, the potential for the model to \textit{overfit} the training data by learning overly specific patterns (such as noise in the training dataset) is also greatly increased, due to the larger number of degrees of freedom in the model. Usually, we will want to use our model to make predictions based on new data, rather than predicting the already-known labels of our training dataset; and therefore we would like to produce a model which will \textit{generalise}, performing as well on unseen data as possible.
         
         Thankfully, measures can be taken in order to mitigate the issues described above: several are outlined in the following subsections.
+        
         
         
         \subsubsection{Mini-Batch Gradient Descent}
@@ -677,8 +676,7 @@
             As a final measure, it is usually sensible to split the available data still further - into training, validation sets and a \textit{test} set, which remains isolated and unused until all training and hyperparameter tuning is completed. The model's performance on this test set is as reliable an indicator as we can achieve of how well the model will perform on unseen data.
         
         
-            
-            
+  
         \subsubsection{Regularisation}
             
             Another typical symptom of overfitting is the interpretation of noise in the training dataset as patterns, and consequent updates being made to the model's weights such that this noise becomes significant in how the model classifies an observation. In that situation, small variation in a few specific inputs can lead to a massive change in the model's output, while the remaining inputs are largely unconsidered.
@@ -696,6 +694,7 @@
             $$
             
         
+        
         \subsubsection{Early Stopping}
             
             One major potential cause of overfitting and wasted training effort is \textit{overtraining}, where the network is forced to complete a fixed number of training epochs despite the fact that additional training may have no benefits after a certain point. \textit{Early stopping methods} try to prevent this by terminating the training process as soon as certain "stopping criteria" are met.
@@ -708,8 +707,6 @@
             % TODO plot
             
             
-
-
 
 \section{Demonstration of Methods} \label{sec:demos}
 
