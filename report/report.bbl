@@ -1,4 +1,4 @@
-\begin{thebibliography}{9}
+\begin{thebibliography}{99}
 
 
 \bibitem{higham}
@@ -35,6 +35,18 @@ A.~Thomas and C. Kaltschmidt.
 D.~Rumelhart, G.~Hinton and R. Williams.
 \newblock Learning representations by back-propagating errors.
 \newblock In {\em Nature} 323:533-536, 1986.
+
+
+\bibitem{large_batch}
+N.~S.~Keskar et~al.
+\newblock On Large-Batch Training for Deep Learning: Generalization Gap and Sharp Minima.
+\newblock {\em	arXiv:1609.04836 [cs.LG]}, 2017.
+
+
+\bibitem{loss_surfaces}
+A.~Choromanska et~al.
+\newblock The Loss Surfaces of Multilayer Networks.
+\newblock {\em arXiv:1412.0233 [cs.LG]}, 2015.
 
 
 \bibitem{early_stopping}
