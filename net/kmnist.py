@@ -81,6 +81,7 @@ plt.subplots(10, 10)
 for k in range(100):
     plt.subplot(10, 10, k+1)
     plt.imshow(model.layers[1].weights[k, 1:].reshape(28, 28), origin="upper")
+    plt.axis("off")
 
 plt.show()
 
