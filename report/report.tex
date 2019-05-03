@@ -716,19 +716,14 @@
             In the implementation used in Section \ref{sec:demos}, early stopping is controlled by a criterion based on the third class of criteria introduced in Section 2.2.1 of \cite{early_stopping}. A window of $s$ iterations is considered: if the average validation cost from the most recent $s$ epochs is higher than the average validation cost from the preceding $s$ epochs, then training terminates and the weights are set to the values they held when validation cost was at its lowest. The width of the window $s$ is a hyperparameter of the network which usually requires some tuning for the best results: too small a value might cause premature termination due to variation caused by stochastic weight updates, whereas too large a value might result in many redundant iterations taking place after the optimal weights were found.
             
             
-            % TODO plot
-            
-            
 
 \section{Demonstration of Methods} \label{sec:demos}
     
+    In the previous sections of this paper, the theory and intuition behind logistic regression and neural network models has been explored and explained in some detail. However in order to actually solve problems in the real world, theory alone is of limited use; and therefore in order to provide a demonstration that methods based on the theory do indeed perform as expected, we provide accompanying implementations of these models (written in Python). \footnote{Code available at \url{https://github.com/owenjonesuob/neural-nets-for-classification}.}
     
-    \footnote{Code available at \url{https://github.com/owenjonesuob/neural-nets-for-classification}.}
+    A highly structured, object-oriented approach has been taken when writing the code, which results in the end product being relatively simple to use, to experiment with and hopefully to extend if desired.
     
-    
-    A highly structured, object-oriented approach has been taken when writing the code, which results in the end product being relatively simple to use, experiment with and hopefully extend.
-    
-    A model is created as an instance of the \texttt{Network} class, and contains one or more layers (all of which are individual classes built on top of the \texttt{Layer} superclass). The first layer in a network must always be an \texttt{Input} layer which defines the shape of the input; thereafter, layers can be added at will as instances of their respective class (e.g. \texttt{Dense}), the only requirement being that the output size of each layer matches the input size of the next. An activation function can additionally be specified for each layer individually. Hence a typical model, with two hidden layers designed to classify observations of size 10 into 4 groups might be constructed as follows:
+    A model is created as an instance of the \texttt{Network} class, and contains one or more layers (all of which are individual classes built on top of the \texttt{Layer} superclass). The first layer in a network must always be an \texttt{Input} layer which defines the shape of the input; thereafter, layers can be added at will as instances of their respective class (e.g. \texttt{Dense}, so called because every input is passed into every neuron and therefore influences every output), the only requirement being that the output size of each layer matches the input size of the next. An activation function can additionally be specified for each layer individually. Hence a typical neural network model with two hidden layers designed to classify observations of size 10 into 4 groups, might be constructed as follows:
     
     
     \begin{verbatim}
@@ -752,13 +747,16 @@
     \end{verbatim}
     
     
-    An assortment of other methods are available to assist with 
+    Useful vectors such as the history of the training and validation costs after each epoch are stored, and an assortment of other methods are available to assist with training, inspection and refinement of the model.
     
     The following subsections demonstrate the results of the implementation of these methods to solve some small example problems, concluding with an application of a neural network model to a larger, more challenging dataset.
     
     
 
     \subsection{Binary Classification}
+    
+    
+    
     
     \subsection{Multiclass Classification}
         
