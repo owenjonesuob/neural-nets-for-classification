@@ -303,7 +303,7 @@
         
         
         
-    \subsection{Layers and Forward Propagation}
+    \subsection{Layers and Forward Propagation} \label{sec:forward_prop}
         
         % TODO diagrams?
         
@@ -329,7 +329,7 @@
         
         \end{itemize}
         
-        The propagation of the original input through the layers of the network is called \textit{forward propagation}. Note that the activated output of the final layer, $\mathbf{a}^{(L)}$, is considered to be the overall output of the network, and it is this output which we wish to produce results similar to our targets $\mathbf{y_i}$. Note also that it is this output which is used in the cost function.
+        The propagation of the original input through the layers of the network is called \textit{forward propagation}. Note that the activated output of the final layer, $\mathbf{a}^{(L)}$, is considered to be the overall output of the network, and it is this output which we wish to produce results similar to our targets $\mathbf{y_i}$. Note also that it is this output which is used in the cost function. The layers of the network between the input and output layers are often called \textit{hidden layers}, and a network containing one or more hidden layers is sometimes referred to as a \textit{deep learning} model.
         
         
     
@@ -723,9 +723,40 @@
 \section{Demonstration of Methods} \label{sec:demos}
     
     
-    \footnote{Location of code: \url{https://github.com/owenjonesuob/neural-nets-for-classification}}
+    \footnote{Code available at \url{https://github.com/owenjonesuob/neural-nets-for-classification}.}
     
-    The following subsections demonstrate the application of these implementations to some small example problems, concluding with 
+    
+    A highly structured, object-oriented approach has been taken when writing the code, which results in the end product being relatively simple to use, experiment with and hopefully extend.
+    
+    A model is created as an instance of the \texttt{Network} class, and contains one or more layers (all of which are individual classes built on top of the \texttt{Layer} superclass). The first layer in a network must always be an \texttt{Input} layer which defines the shape of the input; thereafter, layers can be added at will as instances of their respective class (e.g. \texttt{Dense}), the only requirement being that the output size of each layer matches the input size of the next. An activation function can additionally be specified for each layer individually. Hence a typical model, with two hidden layers designed to classify observations of size 10 into 4 groups might be constructed as follows:
+    
+    
+    \begin{verbatim}
+        model = Network(layers = [
+            Input(output_size=10),
+            Dense(input_size=10, output_size=20, activation="sigmoid"),
+            Dense(input_size=20, output_size=12, activation="sigmoid"),
+            Dense(input_size=12, output_size=4, activation="softmax")
+        ])
+    \end{verbatim}
+    
+    
+    Such a model has an associated \texttt{train()} method where data, labels and hyperparameters are passed in. A typical training run might look like:
+    
+    
+    \begin{verbatim}
+        success = model.train(
+            X_train, y_train, X_val, y_val, epochs=1000, batch_size=128,
+            learning_rate=10, penalty=0.1, early_stopping=200
+        )
+    \end{verbatim}
+    
+    
+    An assortment of other methods are available to assist with 
+    
+    The following subsections demonstrate the results of the implementation of these methods to solve some small example problems, concluding with an application of a neural network model to a larger, more challenging dataset.
+    
+    
 
     \subsection{Binary Classification}
     
@@ -736,14 +767,10 @@
         
         
         
-        A highly structured, object-oriented approach has been taken which allows for 
         
+        For the remainder of this section we will consider the Kuzushiji-MNIST (KMNIST) dataset \footnote{Dataset available at \url{https://www.kaggle.com/anokas/kuzushiji}.} of handwritten Japanese \textit{hirigana} characters. More information and background on the dataset can be found in \cite{kmnist}.
         
-        
-        
-        For the remainder of this section we will consider the Kuzushiji-MNIST (KMNIST) dataset.
-        
-        KMNIST is designed as a drop-in replacement for the infamous MNIST dataset of handwritten numeric digits, and therefore is identical in structure to MNIST: each observation is a single 28x28 matrix representing a 28x28-pixel greyscale image. Each element of the matrix represents a pixel, and its value represents the "intensity" of that pixel on a scale of 0 (white) to 1 (black). Some examples from the dataset are shown in Figure \ref{fig:kmnist_examples}, and more information and background on the dataset is provided in \ref{kmnist}.
+        KMNIST is designed as a drop-in replacement for the infamous MNIST dataset of handwritten numeric digits, and therefore is identical in structure to MNIST: each observation is a single 28x28 matrix representing a 28x28-pixel greyscale image. Each element of the matrix represents a pixel, and its value represents the "intensity" of that pixel on a scale of 0 (white) to 1 (black). Some examples from the dataset are shown in Figure \ref{fig:kmnist_examples}.
         
         
         \begin{figure}[h] \label{fig:kmnist_examples}
@@ -766,6 +793,14 @@
             \caption{"Confusion plot" showing examples from the test dataset which were correctly and incorrectly classified by the trained two-hidden-layer model.}
         \end{figure}
         
+        
+        We hope that each neuron in our model has "learned to recognise" some pattern in the dataset, and that the weights for that neuron have been adjusted such that the presence of that pattern will trigger a strong response. It therefore is an interesting exercise to visualise the weights of the network and see the patterns that they have learned. It is only really possible for us to interpret with any meaning the weights of the neurons in the first layer, which receive the original images as input, since neurons in subsequent layers are learning "patterns of patterns" as described in Section \ref{sec:forward_prop}. The weights from a selection of neurons in the first layer of the KMNIST-trained model are visualised in Figure \ref{fig:kmnist_neurons}.
+        
+        
+        \begin{figure}[h] \label{fig:kmnist_neurons}
+            \includegraphics[width=1.2\textwidth, center]{kmnist_neurons}
+            \caption{Visualisations of the weights from several neurons in the first layer of the KMNIST-trained network. The black pixels in each image correspond to the most positive weight values, and white pixels to the most negative weight values.}
+        \end{figure}
 
 
 
