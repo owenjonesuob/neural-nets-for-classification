@@ -13,7 +13,7 @@ np.random.seed(101)
 
 
 # Take a random subset of the data if necessary (e.g. if there is too much to fit into memory)
-idxs = np.random.choice(60000, 10000, replace=False)
+idxs = np.random.choice(60000, 60000, replace=False)
 
 kmnist_imgs = np.load("../data/kmnist-train-imgs.npz")["arr_0"]
 kmnist_imgs = kmnist_imgs.reshape(-1, 784)[idxs, :]
