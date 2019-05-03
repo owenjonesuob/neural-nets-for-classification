@@ -14,7 +14,8 @@
 \setlength{\jot}{12pt}
 
 \usepackage{graphicx}
-\graphicspath{graphics/}
+\graphicspath{{fig/}}
+\usepackage[export]{adjustbox}
 
 \begin{document}
 	
@@ -36,7 +37,18 @@
 
 \section{Introduction to Classification Problems}
 
-    % TODO
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     Historically, machine learning tasks have fallen into one of several categories: supervised learning problems, unsupervised learning problems, and more recently reinforcement learning
     
     Classification tasks (in the sense which this paper considers) belong to the supervised learning family of tasks, where the data used in the training process is \textit{labelled}
@@ -709,19 +721,51 @@
             
 
 \section{Demonstration of Methods} \label{sec:demos}
+    
+    
+    \footnote{Location of code: \url{https://github.com/owenjonesuob/neural-nets-for-classification}}
+    
+    The following subsections demonstrate the application of these implementations to some small example problems, concluding with 
 
     \subsection{Binary Classification}
     
     \subsection{Multiclass Classification}
         
         % TODO explain why we are only looking at net here, and not logreg
-        Although logistic regression is limited to producing a binary output, 
         
         
         
-        For the remainder of this section we will consider the Kuzushiji-MNIST (KMNIST) dataset \cite{kmnist}. 
         
-        KMNIST is designed as a drop-in replacement for the infamous MNIST dataset of handwritten numeric digits, and therefore is identical in structure to MNIST: each observation is a single 28x28 matrix, where each element represents an "intensity" on a scale of 0 (white) to 1 (black), and therefore when visualised as a matrix plot
+        A highly structured, object-oriented approach has been taken which allows for 
+        
+        
+        
+        
+        For the remainder of this section we will consider the Kuzushiji-MNIST (KMNIST) dataset.
+        
+        KMNIST is designed as a drop-in replacement for the infamous MNIST dataset of handwritten numeric digits, and therefore is identical in structure to MNIST: each observation is a single 28x28 matrix representing a 28x28-pixel greyscale image. Each element of the matrix represents a pixel, and its value represents the "intensity" of that pixel on a scale of 0 (white) to 1 (black). Some examples from the dataset are shown in Figure \ref{fig:kmnist_examples}, and more information and background on the dataset is provided in \ref{kmnist}.
+        
+        
+        \begin{figure}[h] \label{fig:kmnist_examples}
+            \includegraphics[width=0.6\textwidth, center]{kmnist_examples}
+            \caption{Examples of images belonging to each of the 10 classes of the KMNIST dataset. The top row contains the modern-day Japanese \textit{hiragana} character, typeset, which each class represents.}
+        \end{figure}
+        
+        
+        The training dataset is provided as a 3-dimensional array of size 60000x28x28, and therefore a small amount of data preprocessing was required to "unroll" each of the 60000 observations into a one-dimensional vector of length 784. The dataset was then split by assigning each observation at random into one of three groups making up 60\%, 20\% and 20\% of the original dataset: the largest set was used for training, and the other two for hyperparameter tuning via holdout cross-validation and for final performance testing respectively. In each dataset, each input was independently rescaled on a range of 0 to 1 - not \textit{strictly} necessary in the case of this problem, since all values lay somewhere in this range anyway.
+        
+        Generally when deciding on a network architecture, it is useful to follow the principle of Occam's razor: in general we ought to choose the simplest model which explains the data sufficiently well. Therefore a relatively small model was defined at first, with a single hidden layer containing a few tens of neurons.
+        
+        However, it soon became apparent that this model was plateauing at a performance of approximately 87\% validation accuracy, even when the size of the hidden layer was increased to several hundred neurons in size.
+        
+        Therefore a second, smaller, hidden layer was added in an attempt to take advantage of higher-level patterns which might be present in the dataset - in practical terms, a single line of code was added defining the new layer. After some experimentation and adjustment of hyperparameters, a network with two hidden layers containing 200 and 30 neurons respectively was capable of consistently achieving approximately 93\% validation set accuracy (and 92\% test set accuracy). Figure \ref{fig:kmnist_confusion} shows examples from the test dataset which were correctly and incorrectly classified by this model, and gives some idea of the complexity of the task at hand.
+        
+        
+        \begin{figure}[h] \label{fig:kmnist_confusion}
+            \includegraphics[width=0.8\textwidth, center]{kmnist_confusion}
+            \caption{"Confusion plot" showing examples from the test dataset which were correctly and incorrectly classified by the trained two-hidden-layer model.}
+        \end{figure}
+        
 
 
 
