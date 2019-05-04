@@ -61,6 +61,18 @@ T.~Clanuwat et~al.
 \newblock {\em arXiv:1812.01718 [cs.CV]}, 2018.
 
 
+\bibitem{google_nmt}
+Y.~Wu et~al.
+\newblock Google's Neural Machine Translation System: Bridging the Gap between Human and Machine Translation.
+\newblock {\em arXiv:1609.08144 [cs.CL]}, 2016.
+
+
+\bibitem{kaparthy_rnns}
+A.~Kaparthy.
+\newblock The Unreasonable Effectiveness of Recurrent Neural Networks.
+\newblock \url{http://karpathy.github.io/2015/05/21/rnn-effectiveness/}, 2015.
+
+
 \bibitem{optimisation}
 P.~Oliveira et~al.
 \newblock Machine-Learning: An overview of optimization techniques.
