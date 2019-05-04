@@ -806,7 +806,7 @@
                 \subfloat{\includegraphics[width=0.3\textwidth]{tricky_early_val}} &
                 \subfloat{\includegraphics[width=0.3\textwidth]{tricky_early_curves}}
             \end{tabular}
-            \caption{The \textit{top} row corresponds to a model which was overtrained: noise in the training dataset has been learned (first column), and the model does not generalise well to unseen test data (second column). The validation cost curve explodes noisily away from the training cost curve (final column). The \textit{bottom} row corresponds to exactly the same model, but with early stopping implemented as described in Section \ref{sec:early_stopping} ($s = 200$). Note how training has been terminated once the validation cost curve starts to rise, which has resulted in a much better decision boundary for generalisation of the model.}
+            \caption{The \textit{top} row corresponds to a model which was overtrained: noise in the training dataset has been learned (first column), and the model does not generalise well to unseen test data (second column). The validation cost curve, orange, veers noisily away from the training cost curve, blue (final column). The \textit{bottom} row corresponds to exactly the same model, but with early stopping implemented as described in Section \ref{sec:early_stopping} ($s = 200$). Note how training has been terminated once the validation cost curve starts to rise, which has resulted in a much better decision boundary for generalisation of the model.}
             \label{fig:tricky}
         \end{figure}
     
@@ -814,21 +814,32 @@
     
     \subsection{Multiclass Classification}
         
-        % TODO explain why we are only looking at net here, and not logreg
+        In order to demonstrate the behaviour of a multiclass neural network classifier, we first consider a small two-dimensional problem featuring four fully separable classes. The initialisation of a model is much the same as was demonstrated in the previous subsection, although we will add an extra hidden layer:
         
         
-                
+        \begin{verbatim}
+            model = Network(layers = [
+                Input(2),
+                Dense(2, 20, "sigmoid"),
+                Dense(20, 20, "sigmoid"),
+                Dense(20, 4, "softmax")
+            ])
+        \end{verbatim}
+        
+        Notice also that since we are no longer predicting a binary outcome, we have switched to using the softmax activation function in the final layer of the network.
+        
+        Figure \ref{fig:islands} provides an insight into how the decision boundaries change during the training process. The left-hand plot shows the boundaries after approximately 400 training epochs, when the outer groups of observations have already been largely classified correctly; then the central plot shows how after approximately 1400 training epochs, the boundaries have shifted to enclose the inner groups.
+        
+        
         \begin{figure}[h]
             \begin{tabular}{ccc}
                 \subfloat{\includegraphics[width=0.3\textwidth]{islands_early_val}} &
                 \subfloat{\includegraphics[width=0.3\textwidth]{islands_late_val}} &
                 \subfloat{\includegraphics[width=0.3\textwidth]{islands_curves}}
             \end{tabular}
-            \caption{80, 434, 402 - 800, 2110, 1409}
+            \caption{Early stopping implemented as described in Section \ref{sec:early_stopping}. When $s = 80$, training terminated after 434 epochs and weights were reset to the values they held after epoch 402 (left). When $s = 800$, training terminated after 2110 epochs and weights were reset to the values they held after epoch 1409 (centre). These saved epochs correspond to local minima of the validation cost function, in orange (right).}
             \label{fig:islands}
         \end{figure}
-        
-        
         
         
         For the remainder of this section we will consider the Kuzushiji-MNIST (KMNIST) dataset \footnote{Dataset available at \url{https://www.kaggle.com/anokas/kuzushiji}.} of handwritten Japanese \textit{hirigana} characters. More information and background on the dataset can be found in \cite{kmnist}.
@@ -872,7 +883,9 @@
 
 \section{Areas for Further Work}
 
-
+    % TODO
+    
+    
 
 \bibliography{report}
 \bibliographystyle{abbrv}
