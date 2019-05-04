@@ -11,7 +11,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 
-\setlength{\jot}{12pt}
+\setlength{\jot}{11pt}
 
 \usepackage{graphicx}
 \graphicspath{{fig/}}
@@ -32,23 +32,36 @@
     %TODO
     
 	Here is the contents of my abstract blah blah blah blah blah.
+    
+    
+    Section \ref{sec:demos} of this paper
+    
+    We conclude by highlighting some areas for possible further work
+    
+    
 \end{abstract}
 
 
 
-\section{Introduction to Classification Problems}
-
+\section{Introduction to Classification Tasks}
     
-    % TODO
+    Most real-world problems have an answer which falls into one of two categories: an \textit{amount}, or a \textit{choice} between two or more options.
     
-    Historically, machine learning tasks have fallen into one of several categories: supervised learning problems, unsupervised learning problems, and more recently reinforcement learning
+    The first type of question, where the answer is generally a number on some continuous scale, are known as \textit{regression} problems. The second type, where the answer is some discrete label or category, are known as \textit{classification} problems; and this second type of question will be the focus of this paper.
     
-    Classification tasks (in the sense which this paper considers) belong to the supervised learning family of tasks, where the data used in the training process is \textit{labelled}
+    Expanding slightly on the definition, a classification task consists of observing some set of inputs (e.g. "Do I want to be on the other side of the road? How fast is that car approaching? How tasty is the chocolate I am eating?"). The influence and relative importance of each input is assessed, and the combination of these assessments is used to assign a label to that observation (e.g. "I \textit{shouldn't} cross the road right now"). For every task which comes with such a set of inputs, in order to consistently make good decisions the influences and relative importances of each input must be learned.
     
-    qualitative outputs
+    The learning process usually falls under one of two approaches. \textit{Unsupervised learning} results in decisions being made based on commonalities in the inputs of multiple observations (e.g. "There are lots of other people on that side of the road, so I'll cross too and see what's going on."). On the other hand, \textit{supervised learning} uses the decisions which were made based on previous observations to inform the making of the current decision (e.g. "In the past, whenever a car was approaching as quickly as this, I didn't cross; and it didn't seem to matter whether or not the chocolate I was eating was tasty; so I \textit{shouldn't} cross right now.").
     
-    In Section \ref{sec:demos} of this paper, the 
-
+    We will focus on the latter approach in this paper. Mathematically, such problems can be formulated as follows: we wish to define a model $f$ characterised by some set of parameters $\boldsymbol{\theta}$, which maps a given set of inputs $\mathbf{x_i} \in \mathbb{R}^n$ as closely as possible to an associated output $y_i \in \mathcal{C} \subset \mathbb{Z}$:
+    
+    $$ \begin{aligned}
+    &f \colon \mathbb{R}^n \to \mathcal{C} \\
+    &f(\mathbf{x_i} \ \vert \ \boldsymbol{\theta}) \approx y_i
+    \end{aligned} $$
+    
+    The following sections provide an overview of two popular supervised classification models: \textit{logistic regression}, and the \textit{artificial neural network}.
+    
 
 
 \section{Logistic Regression} \label{sec:logreg}
@@ -58,7 +71,7 @@
     Therefore if we wish to produce a model capable of performing classification tasks, a useful starting point would be a binary classifier: that is, we would like to produce a model $f$ which, given some observation $\mathbf{x}$ with an associated label $y \in \{0, \ 1\}$, produces a result such that
     
     $$
-    f(\mathbf{x}) \approx y \,.
+    f(\mathbf{x} \ \vert \ \boldsymbol{\theta}) \approx y \,.
     $$
     
     This section outlines the motivation behind and the definition of one of the best-known binary classifiers, the \textit{logistic regression} model.
@@ -87,7 +100,7 @@
         z = \sum_{k=0}^n \theta_k x_k = \boldsymbol{\theta}^\top \mathbf{x} \,.
         $$
         
-        By adjusting the weights $\theta_0, \ldots, \theta_n$, the same inputs $\mathbf{x}$ can give us a completely different output. Note that if we do not restrict $\boldsymbol{\theta}$ then $z$ is unbounded, i.e. $z \in (-\infty, \infty)$.
+        By adjusting the weights $\theta_0, \ldots, \theta_n$, the same inputs $\mathbf{x}$ can give us a completely different output. Note that if we do not restrict $\boldsymbol{\theta}$ then $z$ is unbounded, i.e. $z \in (-\infty, \infty)$. This is exactly the formulation of a \textit{linear regression} model (a \textit{linear model} in statistical terms), and this is what lends the name "regression" to the logistic regression model, as we shall see shortly.
         
         
         
@@ -107,16 +120,20 @@
         \sigma_2(z) = \frac{1}{1 + e^{-z}} \,.
         $$
         
-        Note how large positive values of $z$ are approximately mapped to 1, large negative values are approximately mapped to 0, and the transition between the two asymptotic limits is relatively sudden, yet smooth, with the central "threshold" at $z = 0$.
+        Note how large positive values of $z$ are approximately mapped to 1, large negative values are approximately mapped to 0, and the transition between the two asymptotic limits is relatively sudden, yet smooth, with the inflection point at $z = 0$.     
         
-        In the remainder of this paper, the activated output $\sigma(z)$ is sometimes denoted as $a$ for the sake of notational simplicity.
-        
-        
+           
         \begin{figure}[h]
             \includegraphics[width=0.6\textwidth, center]{sigmoid}
             \caption{The sigmoid function over the domain $-10 \leq z \leq 10$.}
             \label{fig:sigmoid}
         \end{figure}
+        
+        In order to extract quantitative predictions from the model, we can simply set some threshold - typically 0.5 - and assign an integer label to the observation according to which side of the threshold $\sigma_2(z)$ falls. This \textit{decision rule} is what transforms logistic regression from a regression to a classification model.
+        
+        Hence our input has now been mapped to a linear output, and then transformed via the non-linear sigmoid function. This is the basis of the \textit{logistic regression} model: in statistical terms, this is a ge\textit{generalised linear model} with a \textit{logit} (inverse sigmoid) link function.
+        
+        In the remainder of this paper, the activated output $\sigma(z)$ is sometimes denoted as $a$ for the sake of notational simplicity.
         
         
         
