@@ -16,6 +16,7 @@
 \usepackage{graphicx}
 \graphicspath{{fig/}}
 \usepackage[export]{adjustbox}
+\usepackage{subfig}
 
 \begin{document}
 	
@@ -631,7 +632,7 @@
         
         
 
-    \subsection{Improvements to Training}
+    \subsection{Improvements to Training} \label{sec:improvements}
         
         In Section \ref{sec:gradient_descent} we discussed the update to be made to the weights in the logistic regression model - concretely, a step in the direction of steepest descent $\nabla J(\boldsymbol{\theta})$. If we consider $\boldsymbol{\theta}$ to be a concatenated vector of the unrolled weight matrices, i.e.
         
@@ -707,7 +708,7 @@
             
         
         
-        \subsubsection{Early Stopping}
+        \subsubsection{Early Stopping} \label{sec:early_stopping}
             
             One major potential cause of overfitting and wasted training effort is \textit{overtraining}, where the network is forced to complete a fixed number of training epochs despite the fact that additional training may have no benefits after a certain point. \textit{Early stopping methods} try to prevent this by terminating the training process as soon as certain "stopping criteria" are met.
             
@@ -754,7 +755,60 @@
     
 
     \subsection{Binary Classification}
-    
+        
+        To show the difference in approach between logistic regression and neural network models, we shall attempt to carry out classification on a two-class dataset where the classes are not linearly separable in 2-dimensional space.
+        
+        First we shall implement a logistic regression model. In neural network terminology, a logistic regression model is a single sigmoid-activated neuron, so we can use the object-oriented implementation to define a logistic regression model as follows:
+        
+        \begin{verbatim}
+            model = Network(layers = [
+                Input(2),
+                Dense(2, 2, activation="sigmoid")
+            ])
+        \end{verbatim}
+        
+        There is one slight quirk here, in that we must provide one-hot encoded labels to the \texttt{train()} method; and therefore we must actually train two output neurons, one corresponding to a class of 0 and the other to a class of 1. However, note that these two neurons are in fact "mirror images": if an observation does not belong to one class, then it \textit{must} belong to the other, and therefore by the symmetry of the binary cross-entropy cost function the weights of one neuron are updated in precisely the opposite direction to those of the other. Consequently after training, the weights of one neuron are simply the negatives of the weights of the other.
+        
+        In the left-hand plot of Figure \ref{fig:moons} we see the result of 200 epochs of training: a linear decision boundary giving a training set accuracy of approximately 88\%.
+        
+        In order to do better, we will need to increase the size of our model - although not by a very large amount:
+        
+        \begin{verbatim}
+            model = Network(layers = [
+                Input(2),
+                Dense(2, 3, activation="sigmoid"),
+                Dense(3, 2, activation="sigmoid")
+            ])
+        \end{verbatim}
+        
+        Adding a very small hidden layer to the model is enough to capture the non-linear decision boundary almost perfectly, as can be seen in the right-hand plot of Figure \ref{fig:moons}. This model achieves over 99\% accuracy after 200 epochs of training.
+        
+        
+        \begin{figure}[h]
+            \begin{tabular}{cc}
+                \subfloat{\includegraphics[width=0.45\textwidth]{moons_logreg}} &
+                \subfloat{\includegraphics[width=0.45\textwidth]{moons_nnet}}
+            \end{tabular}
+            \caption{The \textit{left-hand} plot shows the decision boundary found by logistic regression after 200 training epochs. The \textit{right-hand} plot shows the decision boundary found by a small neural network after 200 training epochs. All hyperparameters are the same in both models.}
+            \label{fig:moons}
+        \end{figure}
+        
+        
+        We should take care, however, not to define a model which is unnecessarily complex for the task at hand; and not to overtrain our model once an adequate level of performance has been achieved, since otherwise we are likely to encounter overfitting as described in \ref{sec:improvements}. Figure \ref{fig:tricky} shows the consequences of overtraining a model and how early stopping can help to prevent this from happening.
+        
+        
+        \begin{figure}[h]
+            \begin{tabular}{ccc}
+                \subfloat{\includegraphics[width=0.3\textwidth]{tricky_over_train}} &
+                \subfloat{\includegraphics[width=0.3\textwidth]{tricky_over_val}} &
+                \subfloat{\includegraphics[width=0.3\textwidth]{tricky_over_curves}} \\
+                \subfloat{\includegraphics[width=0.3\textwidth]{tricky_early_train}} &
+                \subfloat{\includegraphics[width=0.3\textwidth]{tricky_early_val}} &
+                \subfloat{\includegraphics[width=0.3\textwidth]{tricky_early_curves}}
+            \end{tabular}
+            \caption{The \textit{top} row corresponds to a model which was overtrained: noise in the training dataset has been learned (first column), and the model does not generalise well to unseen test data (second column). The validation cost curve explodes noisily away from the training cost curve (final column). The \textit{bottom} row corresponds to exactly the same model, but with early stopping implemented as described in Section \ref{sec:early_stopping} ($s = 200$). Note how training has been terminated once the validation cost curve starts to rise, which has resulted in a much better decision boundary for generalisation of the model.}
+            \label{fig:tricky}
+        \end{figure}
     
     
     
@@ -762,6 +816,17 @@
         
         % TODO explain why we are only looking at net here, and not logreg
         
+        
+                
+        \begin{figure}[h]
+            \begin{tabular}{ccc}
+                \subfloat{\includegraphics[width=0.3\textwidth]{islands_early_val}} &
+                \subfloat{\includegraphics[width=0.3\textwidth]{islands_late_val}} &
+                \subfloat{\includegraphics[width=0.3\textwidth]{islands_curves}}
+            \end{tabular}
+            \caption{80, 434, 402 - 800, 2110, 1409}
+            \label{fig:islands}
+        \end{figure}
         
         
         
@@ -771,9 +836,10 @@
         KMNIST is designed as a drop-in replacement for the infamous MNIST dataset of handwritten numeric digits, and therefore is identical in structure to MNIST: each observation is a single 28x28 matrix representing a 28x28-pixel greyscale image. Each element of the matrix represents a pixel, and its value represents the "intensity" of that pixel on a scale of 0 (white) to 1 (black). Some examples from the dataset are shown in Figure \ref{fig:kmnist_examples}.
         
         
-        \begin{figure}[h] \label{fig:kmnist_examples}
+        \begin{figure}[h]
             \includegraphics[width=0.6\textwidth, center]{kmnist_examples}
             \caption{Examples of images belonging to each of the 10 classes of the KMNIST dataset. The top row contains the modern-day Japanese \textit{hiragana} character, typeset, which each class represents.}
+            \label{fig:kmnist_examples}
         \end{figure}
         
         
@@ -786,18 +852,20 @@
         Therefore a second, smaller, hidden layer was added in an attempt to take advantage of higher-level patterns which might be present in the dataset - in practical terms, a single line of code was added defining the new layer. After some experimentation and adjustment of hyperparameters, a network with two hidden layers containing 200 and 30 neurons respectively was capable of consistently achieving approximately 93\% validation set accuracy (and 92\% test set accuracy). Figure \ref{fig:kmnist_confusion} shows examples from the test dataset which were correctly and incorrectly classified by this model, and gives some idea of the complexity of the task at hand.
         
         
-        \begin{figure}[h] \label{fig:kmnist_confusion}
+        \begin{figure}[h]
             \includegraphics[width=0.8\textwidth, center]{kmnist_confusion}
             \caption{"Confusion plot" showing examples from the test dataset which were correctly and incorrectly classified by the trained two-hidden-layer model.}
+            \label{fig:kmnist_confusion}
         \end{figure}
         
         
         We hope that each neuron in our model has "learned to recognise" some pattern in the dataset, and that the weights for that neuron have been adjusted such that the presence of that pattern will trigger a strong response. It therefore is an interesting exercise to visualise the weights of the network and see the patterns that they have learned. It is only really possible for us to interpret with any meaning the weights of the neurons in the first layer, which receive the original images as input, since neurons in subsequent layers are learning "patterns of patterns" as described in Section \ref{sec:forward_prop}. The weights from a selection of neurons in the first layer of the KMNIST-trained model are visualised in Figure \ref{fig:kmnist_neurons}.
         
         
-        \begin{figure}[h] \label{fig:kmnist_neurons}
+        \begin{figure}[h]
             \includegraphics[width=1.2\textwidth, center]{kmnist_neurons}
             \caption{Visualisations of the weights from several neurons in the first layer of the KMNIST-trained network. The black pixels in each image correspond to the most positive weight values, and white pixels to the most negative weight values.}
+            \label{fig:kmnist_neurons}
         \end{figure}
 
 
