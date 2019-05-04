@@ -24,22 +24,21 @@ model = Network(layers = [
     Dense(2, 2, "sigmoid")
 ])
 
-success = model.train(X, y, epochs=400, batch_size=512, learning_rate=10, penalty=0)
+success = model.train(X, y, epochs=200, batch_size=512, learning_rate=10, penalty=0)
 utils.plot_cost_curves(model, val_curve=False)
-utils.plot_boundaries(model, X, y, subdivs=150)
+utils.plot_boundaries(model, X, y, file="moons_logreg.png")
 
 # Smallish neural network, with same hyperparams
 
 model = Network(layers = [
     Input(2),
-    Dense(2, 10, "sigmoid"),
-    Dense(10, 4, "sigmoid"),
-    Dense(4, 2, "sigmoid")
+    Dense(2, 3, "sigmoid"),
+    Dense(3, 2, "sigmoid")
 ])
 
-success = model.train(X, y, epochs=400, batch_size=512, learning_rate=10, penalty=0)
+success = model.train(X, y, epochs=200, batch_size=512, learning_rate=10, penalty=0)
 utils.plot_cost_curves(model, val_curve=False)
-utils.plot_boundaries(model, X, y, subdivs=150)
+utils.plot_boundaries(model, X, y, file="moons_nnet.png")
 
 # Split the dataset to show off validation curves and early stopping
 
@@ -49,7 +48,7 @@ model = Network(layers = [
     Input(2),
     Dense(2, 20, "sigmoid"),
     Dense(20, 4, "sigmoid"),
-    Dense(4, 2, "softmax")
+    Dense(4, 2, "sigmoid")
 ])
 
 success = model.train(X_train, y_train, X_val, y_val, epochs=2000, batch_size=256, learning_rate=10, penalty=0.01, early_stopping=150)
@@ -69,14 +68,14 @@ X_val = utils.scale_minmax(X_val)
 plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train)
 plt.show()
 
-model2 = Network(layers = [
+model = Network(layers = [
     Input(2),
     Dense(2, 30, "sigmoid"),
     Dense(30, 10, "sigmoid"),
     Dense(10, 4, "softmax")
 ])
 
-success = model2.train(X_train, y_train, X_val, y_val, epochs=500, batch_size=128, learning_rate=10, penalty=0.05, early_stopping=50)
-utils.plot_cost_curves(model2)
-utils.plot_boundaries(model2, X_train, y_train, subdivs=100)
-utils.plot_boundaries(model2, X_val, y_val, subdivs=100)
+success = model.train(X_train, y_train, X_val, y_val, epochs=500, batch_size=128, learning_rate=10, penalty=0.05, early_stopping=50)
+utils.plot_cost_curves(model)
+utils.plot_boundaries(model, X_train, y_train)
+utils.plot_boundaries(model, X_val, y_val)

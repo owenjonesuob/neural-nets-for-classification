@@ -32,10 +32,12 @@ def scale_minmax(data):
 
 
 
-def plot_boundaries(model, data, labels, subdivs=200, alpha=0.2):
+def plot_boundaries(model, data, labels, file=None, subdivs=200, alpha=0.2):
     
     if data.shape[1] != 2:
         raise ValueError("Can only visualise 2D data")
+
+    plt.clf()
 
     fig, ax = plt.subplots()
     ax.scatter(data[:, 0], data[:, 1], c=labels)
@@ -56,19 +58,29 @@ def plot_boundaries(model, data, labels, subdivs=200, alpha=0.2):
     
     plt.scatter(data[:, 0], data[:, 1], c=labels)
 
-    plt.show()
+    if file is None:
+        plt.show()
+    else:
+        plt.savefig(file)
     
     return None
 
 
 
-def plot_cost_curves(model, val_curve=True):
+def plot_cost_curves(model, file=None, val_curve=True):
+    
+    plt.clf()
 
     plt.plot(model.train_cost_history)
     if val_curve:
         plt.plot(model.val_cost_history)
+    plt.xlabel("Iteration")
+    plt.ylabel("Cost")
         
-    plt.show()
+    if file is None:
+        plt.show()
+    else:
+        plt.savefig(file)
 
     return None
 

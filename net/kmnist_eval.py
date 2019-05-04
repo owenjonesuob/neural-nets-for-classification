@@ -30,7 +30,7 @@ model = Network(layers = [
     Dense(30, 10, "softmax")
 ])
 
-model.load_weights("val_weights.npy")
+model.load_weights("final_weights.npy")
 
 
 # Final score
@@ -80,4 +80,5 @@ for row in range(n_classes):
 fig.text(0.05, 0.5, "Predicted class", ha="center", va="center", fontsize=12, rotation="vertical")
 fig.text(0.5, 0.95, "Actual class", ha="center", va="center", fontsize=12)
 
+plt.savefig("kmnist_confusion.png")
 plt.show()

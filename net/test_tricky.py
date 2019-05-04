@@ -26,6 +26,7 @@ for k in range(n):
 y = y.astype(int)
 
 plt.scatter(X[:, 0], X[:, 1], c=y)
+plt.savefig("tricky_data.png")
 plt.show()
 
 
@@ -43,15 +44,16 @@ model = Network(layers = [
 
 # First with no early stopping or regularisation
 success = model.train(X_train, y_train, X_val, y_val, epochs=10000, batch_size=128, learning_rate=10, penalty=0)
-utils.plot_cost_curves(model)
-utils.plot_boundaries(model, X_train, y_train)
-utils.plot_boundaries(model, X_val, y_val)
+utils.plot_cost_curves(model, file="tricky_over_curves.png")
+utils.plot_boundaries(model, X_train, y_train, file="tricky_over_train.png")
+utils.plot_boundaries(model, X_val, y_val, file="tricky_over_val.png")
 
 # Now with early stopping...
 model.reset()
 success = model.train(X_train, y_train, X_val, y_val, epochs=10000, batch_size=128, learning_rate=10, penalty=0, early_stopping=200)
-utils.plot_cost_curves(model)
-utils.plot_boundaries(model, X_val, y_val)
+utils.plot_cost_curves(model, file="tricky_early_curves.png")
+utils.plot_boundaries(model, X_train, y_train, file="tricky_early_train.png")
+utils.plot_boundaries(model, X_val, y_val, file="tricky_early_val.png")
 
 
 
@@ -92,6 +94,10 @@ model = Network(layers = [
     Dense(20, 4, "softmax")
 ])
 
-success = model.train(X_train, y_train, X_val, y_val, epochs=5000, batch_size=128, learning_rate=10, penalty=0.05, early_stopping=500)
-utils.plot_cost_curves(model)
-utils.plot_boundaries(model, X_val, y_val)
+success = model.train(X_train, y_train, X_val, y_val, epochs=5000, batch_size=128, learning_rate=10, penalty=0.05, early_stopping=80)
+utils.plot_boundaries(model, X_val, y_val, file="islands_early_val.png")
+
+model.reset()
+success = model.train(X_train, y_train, X_val, y_val, epochs=5000, batch_size=128, learning_rate=10, penalty=0.05, early_stopping=800)
+utils.plot_cost_curves(model, file="islands_curves.png")
+utils.plot_boundaries(model, X_val, y_val, file="islands_late_val.png")

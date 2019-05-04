@@ -45,6 +45,7 @@ for col in range(10):
         plt.imshow(kmnist_imgs[to_plot[row], :].reshape(28, 28), origin="upper")
         plt.axis("off")
 
+plt.savefig("kmnist_examples.png")
 plt.show()
 
 
@@ -76,13 +77,14 @@ print("Confusion matrix:\n", utils.confusion_matrix(preds, y_val))
 
 
 # Visualising some of the weights in the first layer
-plt.subplots(10, 10)
+plt.subplots(4, 16, figsize=(16, 4))
 
-for k in range(100):
-    plt.subplot(10, 10, k+1)
+for k in range(64):
+    plt.subplot(4, 16, k+1)
     plt.imshow(model.layers[1].weights[k, 1:].reshape(28, 28), origin="upper")
     plt.axis("off")
 
+plt.savefig("kmnist_neurons.png")
 plt.show()
 
 
