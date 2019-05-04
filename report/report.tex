@@ -39,16 +39,7 @@
 \section{Introduction to Classification Problems}
 
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    % TODO
     
     Historically, machine learning tasks have fallen into one of several categories: supervised learning problems, unsupervised learning problems, and more recently reinforcement learning
     
@@ -116,13 +107,16 @@
         \sigma_2(z) = \frac{1}{1 + e^{-z}} \,.
         $$
         
-        
-        % TODO sigmoid plot
-        
-        
         Note how large positive values of $z$ are approximately mapped to 1, large negative values are approximately mapped to 0, and the transition between the two asymptotic limits is relatively sudden, yet smooth, with the central "threshold" at $z = 0$.
         
         In the remainder of this paper, the activated output $\sigma(z)$ is sometimes denoted as $a$ for the sake of notational simplicity.
+        
+        
+        \begin{figure}[h]
+            \includegraphics[width=0.6\textwidth, center]{sigmoid}
+            \caption{The sigmoid function over the domain $-10 \leq z \leq 10$.}
+            \label{fig:sigmoid}
+        \end{figure}
         
         
         
@@ -137,11 +131,7 @@
             -\log(a) & y = 1 \\
             -\log(1-a) & y = 0
         \end{cases} \,.
-        $$
-        
-        
-        % TODO plot
-        
+        $$        
         
         Note that $CE$ is a function of $\boldsymbol{\theta}$ (since $a$ is a function of $z$, which is dependent on $\boldsymbol{\theta}$), that it takes a value of 0 if $a = y$, and that it increases exponentially as $a$ becomes further from $y$.
         
@@ -305,8 +295,6 @@
         
         
     \subsection{Layers and Forward Propagation} \label{sec:forward_prop}
-        
-        % TODO diagrams?
         
         Recall that the motivation behind logistic regression was to find some underlying pattern in the input which characterised the class of that input.
         
@@ -842,7 +830,7 @@
         \end{figure}
         
         
-        For the remainder of this section we will consider the Kuzushiji-MNIST (KMNIST) dataset \footnote{Dataset available at \url{https://www.kaggle.com/anokas/kuzushiji}.} of handwritten Japanese \textit{hirigana} characters. More information and background on the dataset can be found in \cite{kmnist}.
+        For the remainder of this section we will consider the Kuzushiji-MNIST (KMNIST) dataset \footnote{Dataset available at \url{https://www.kaggle.com/anokas/kuzushiji}.} of handwritten Japanese \textit{hiragana} characters. More information and background on the dataset can be found in \cite{kmnist}.
         
         KMNIST is designed as a drop-in replacement for the infamous MNIST dataset of handwritten numeric digits, and therefore is identical in structure to MNIST: each observation is a single 28x28 matrix representing a 28x28-pixel greyscale image. Each element of the matrix represents a pixel, and its value represents the "intensity" of that pixel on a scale of 0 (white) to 1 (black). Some examples from the dataset are shown in Figure \ref{fig:kmnist_examples}.
         
