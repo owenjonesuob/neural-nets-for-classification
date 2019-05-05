@@ -2,6 +2,10 @@
 \usepackage{arxiv}
 \usepackage{url}
 
+\usepackage[english]{babel}
+\usepackage[autostyle, english=american]{csquotes}
+\MakeOuterQuote{"}
+
 \usepackage{amssymb, amsmath}
 \usepackage{amsthm}
 \newtheorem{lemma}{Lemma}
@@ -132,7 +136,7 @@
         
         In order to extract quantitative predictions from the model, we can simply set some threshold - typically 0.5 - and assign an integer label to the observation according to which side of the threshold $\sigma_2(z)$ falls. This \textit{decision rule} is what transforms logistic regression from a regression to a classification model.
         
-        Hence our input has now been mapped to a linear output, and then transformed via the non-linear sigmoid function. This is the basis of the \textit{logistic regression} model: in statistical terms, this is a ge\textit{generalised linear model} with a \textit{logit} (inverse sigmoid) link function.
+        Hence our input has now been mapped to a linear output, and then transformed via the non-linear sigmoid function. This is the basis of the \textit{logistic regression} model: in statistical terms, this is a \textit{generalised linear model} with a \textit{logit} (inverse sigmoid) link function.
         
         In the remainder of this paper, the activated output $\sigma(z)$ is sometimes denoted as $a$ for the sake of notational simplicity.
         
@@ -642,7 +646,7 @@
 
     \subsection{Improvements to Training} \label{sec:improvements}
         
-        In Section \ref{sec:gradient_descent} we discussed the update to be made to the weights in the logistic regression model - concretely, a step in the direction of steepest descent $\nabla J(\boldsymbol{\theta})$. If we consider $\boldsymbol{\theta}$ to be a concatenated vector of the unrolled weight matrices, i.e.
+        In Section \ref{sec:gradient_descent} we discussed the update to be made to the weights in the logistic regression model - concretely, a step in the direction of steepest descent $- \nabla J(\boldsymbol{\theta})$. If we consider $\boldsymbol{\theta}$ to be a concatenated vector of the unrolled weight matrices, i.e.
         
         $$
         \boldsymbol{\theta} = \left( \theta^{(2)}_{1,1}, \ \theta^{(2)}_{1,2}, \ \ldots, \ \theta^{(L)}_{n_L, (n_{L-1}+1)} \right) \,,
@@ -660,7 +664,7 @@
         
         \subsubsection{Mini-Batch Gradient Descent}
             
-            Given that we only have a certain amount of information available to us for training our model, we would of course like to take full advantage of it; and therefore the training process generally involves making multiple passes over the dataset, using it to determine the updates we will make to the weights in the model. Each pass is known as an \textit{epoch}: one training epoch has passed after each observation in the dataset has influenced an update to the model. This definition allows for several different interpretations of gradient descent.
+            Given that we only have a certain amount of information available to us for training our model, we would of course like to take full advantage of it; therefore the training process generally involves making multiple passes over the dataset, using it to determine the updates we will make to the weights in the model. Each pass is known as an \textit{epoch}: one training epoch has passed after each observation in the dataset has influenced an update to the model. This definition allows for several different interpretations of gradient descent.
             
             The simplest approach is \textit{(full-)batch gradient descent}: the costs of all $m$ observations in the training set are calculated and averaged, and then the descent direction is defined as $- \nabla J(\boldsymbol{\theta})$.
             
@@ -802,7 +806,7 @@
         \end{figure}
         
         
-        We should take care, however, not to define a model which is unnecessarily complex for the task at hand; and not to overtrain our model once an adequate level of performance has been achieved, since otherwise we are likely to encounter overfitting as described in \ref{sec:improvements}. Figure \ref{fig:tricky} shows the consequences of overtraining a model and how early stopping can help to prevent this from happening.
+        We should take care, however, not to define a model which is unnecessarily complex for the task at hand; and not to overtrain our model once an adequate level of performance has been achieved, since otherwise we are likely to encounter overfitting as described in Section \ref{sec:improvements}. Figure \ref{fig:tricky} shows the consequences of overtraining a model and how early stopping can help to prevent this from happening.
         
         
         \begin{figure}[h]
