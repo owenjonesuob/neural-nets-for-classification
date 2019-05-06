@@ -196,7 +196,7 @@
             Now we greedily choose $\Delta \boldsymbol{\theta}$ such that we reduce $J(\boldsymbol{\theta})$ by as much as possible - i.e. by making $\nabla J(\boldsymbol{\theta})^\top \Delta \boldsymbol{\theta}$ as negative as possible. By the Cauchy-Schwarz inequality, the most negative value of $\mathbf{f}^\top \mathbf{g}$ for any $\mathbf{f}, \mathbf{g} \in \mathbb{R}^{n+1}$ is $- \lVert \mathbf{f} \rVert_2 \lVert \mathbf{g} \rVert_2$, when $\mathbf{f} = -\mathbf{g}$. Therefore we shall choose $\Delta \boldsymbol{\theta} = - \nabla J(\boldsymbol{\theta})$ as our \textit{descent direction}. Note that $\nabla J(\boldsymbol{\theta})^\top (- \nabla J(\boldsymbol{\theta})) = -\lVert \nabla J(\boldsymbol{\theta}) \rVert_2^2 \leq 0$ with equality if and only if $\nabla J(\boldsymbol{\theta}) = 0$, and consequently $J(\boldsymbol{\theta} + \Delta \boldsymbol{\theta}) < J(\boldsymbol{\theta})$ so long as $\nabla J(\boldsymbol{\theta}) \neq 0$.
         
     
-    
+        
         \subsubsection{Learning rate}
             
             While it is guaranteed that the "steepest descent" direction we have just chosen, $\Delta \boldsymbol{\theta} = - \nabla J(\boldsymbol{\theta})$, is indeed a descent direction, we must recall at this point that we are using a Taylor series approximation for $J(\boldsymbol{\theta} + \Delta \boldsymbol{\theta})$. Therefore this guarantee only applies in some (potentially very small) radius of the parameter space, centred on $\boldsymbol{\theta}$.
@@ -704,18 +704,20 @@
   
         \subsubsection{Regularisation}
             
-            Another typical symptom of overfitting is the interpretation of noise in the training dataset as patterns, and consequent updates being made to the model's weights such that this noise becomes significant in how the model classifies an observation. In that situation, small variation in a few specific inputs can lead to a massive change in the model's output, while the remaining inputs are largely unconsidered.
+            Another typical symptom of overfitting is the interpretation of noise in the training dataset as patterns, and consequent updates being made to the model's weights such that this noise becomes significant in how observations are classified. In that situation, small variation in a few specific inputs can lead to a massive change in the model's output, while the remaining inputs are largely unconsidered.
             
-            This is achieved by adding some \textit{regularisation term} $R(\boldsymbol{\theta})$ to the cost function which dissuades large weight values. One of the most widely-used regularisation methods is \textit{$L_2$-regularisation} (sometimes called \textit{ridge regression}), where the regularisation term is the $L_2$ norm of the weight vector, scaled by some constant $\lambda$. Then our cost function becomes
+            We can encourage better "spreading" of the weights by adding some \textit{regularisation term} $R(\boldsymbol{\bar{\theta}})$, which penalises large weight values, to the cost function. Here $\boldsymbol{\bar{\theta}}$ is the same as $\boldsymbol{\theta}$, except the elements corresponding to bias units ($\theta^{(l)}_{i,0}$) are set to zero, since we do not wish to penalise changes to the weights which simply shift the solution away from the origin.
+            
+            One of the most widely-used regularisation methods is \textit{$L_2$-regularisation} (sometimes called \textit{ridge regression}), where the regularisation term is the $L_2$ norm of the weight vector, scaled by some constant $\lambda$. Then our cost function becomes
             
             $$
-            J(\boldsymbol{\theta}) = \frac{1}{m} \sum_{i=1}^{m} \left( - \sum_{k=1}^{n} (\mathbf{y_i})_k \log(\mathbf{(a_i)}_k) \right) + \frac{\lambda}{2} \sum_j \theta_j^2 \,,
+            J(\boldsymbol{\theta}) = \frac{1}{m} \sum_{i=1}^{m} \left( - \sum_{k=1}^{n} (\mathbf{y_i})_k \log(\mathbf{(a_i)}_k) \right) + \frac{\lambda}{2} \sum_j \bar{\theta}_j^2 \,,
             $$
             
             and notice that the differential of the new term with respect to each $\theta_j$ is simple to calculate - so during the backpropagation calculations we will now have
             
             $$
-            \frac{\partial J}{\partial \theta^{(l)}_{i,j}} = \delta^{(l)}_i a^{(l-1)}_j + \lambda \theta^{(l)}_{i,j} \,.
+            \frac{\partial J}{\partial \theta^{(l)}_{i,j}} = \delta^{(l)}_i a^{(l-1)}_j + \lambda \bar{\theta}^{(l)}_{i,j} \,.
             $$
             
         
