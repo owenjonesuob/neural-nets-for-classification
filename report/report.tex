@@ -54,7 +54,7 @@
     
     The first type of question, where the answer is generally a number on some continuous scale, are known as \textit{regression} problems. The second type, where the answer is some discrete label or category, are known as \textit{classification} problems; and this second type of question will be the focus of this paper.
     
-    Expanding slightly on the definition, a classification task consists of observing some set of inputs (e.g. "Do I want to be on the other side of the road? How fast is that car approaching? How tasty is the chocolate I am eating?"). The influence and relative importance of each input is assessed, and the combination of these assessments is used to assign a label to that observation (e.g. "I \textit{shouldn't} cross the road right now."). For every task which comes with such a set of inputs, in order to consistently make good decisions the influences and relative importances of each input must be learned.
+    Expanding slightly on the definition, a classification task consists of observing some set of inputs (e.g. "Do I want to be on the other side of the road? How fast is that car approaching? How tasty is the chocolate I am eating?"). The influence and relative importance of each input is assessed, and the combination of these assessments is used to assign a label to that observation (e.g. "I \textit{shouldn't} cross the road right now."). For every task which comes with such a set of inputs, in order to consistently make good decisions the influences and relative importances of each input must be either previously known, prescribed by principle, or learned.
     
     The learning process usually falls under one of two approaches. \textit{Unsupervised learning} results in decisions being made based on commonalities in the inputs of multiple observations (e.g. "There are lots of other people on that side of the road, so I'll cross too and see what's going on."). On the other hand, \textit{supervised learning} uses the decisions which were made based on previous observations to inform the making of the current decision (e.g. "In the past, whenever a car was approaching as quickly as this, I didn't cross; and it didn't seem to matter whether or not the chocolate I was eating was tasty; so I \textit{shouldn't} cross right now.").
     
@@ -350,7 +350,9 @@
         
         Just as in the logistic regression model described in Section \ref{sec:logreg}, when training our model we wish to minimise the cost function $J$ by adjusting the weights in the model. The difference now is that we have multiple layers of neurons, only the last of which is directly connected to the network's output $\mathbf{a}^{(L)}$; and therefore if we still wish to use some gradient-based optimisation method to update the weights, we will need to determine way of calculating $\frac{\partial J}{\partial \theta^{(l)}_{i,j}}$, i.e. the derivative of the cost function with respect to each individual weight in the network.
         
-        We now prove a series of results culminating in Theorem \ref{thm:backprop}, which allows us to do exactly that. Whenever relevant, we consider the cost for a dataset of size $m = 1$ where the observation has a one-hot target label $\mathbf{y} \in \mathbb{R}^{n_L}$; but note that everything immediately generalises to larger values of $m$, since in all cases differentiation distributes over the outer summation (over $m$).
+        We now prove a series of results culminating in Theorem \ref{thm:backprop}, which allows us to do exactly that. The general structure of this section is similar to the corresponding section in \cite{higham} but with some additional results relating to different cost and activation functions.
+        
+        Whenever relevant, we consider the cost for a dataset of size $m = 1$ where the observation has a one-hot target label $\mathbf{y} \in \mathbb{R}^{n_L}$; but note that everything immediately generalises to larger values of $m$, since in all cases differentiation distributes over the outer summation (over $m$).
         
         Before starting, we define a useful intermediate quantity: the \textit{error} of layer $l$, $\boldsymbol{\delta}^{(l)} \in \mathbb{R}^{n_l}$, with components defined for $j = 1, \ldots, n_l$ by
         
@@ -842,7 +844,7 @@
         
         Notice also that since we are no longer predicting a binary outcome, we have switched to using the softmax activation function in the final layer of the network.
         
-        Figure \ref{fig:islands} provides an insight into how the decision boundaries change during the training process. The left-hand plot shows the boundaries after approximately 400 training epochs, when the outer groups of observations have already been largely classified correctly; then the central plot shows how after approximately 1400 training epochs, the boundaries have shifted to enclose the inner groups.
+        Figure \ref{fig:islands} provides an insight into how the decision boundaries change during the training process. The left-hand plot shows the boundaries after approximately 400 training epochs, when the outer groups of observations have already been largely classified correctly (but training was prematurely terminated by early stopping); then the central plot shows how after approximately 1400 training epochs, the boundaries have shifted to enclose the inner groups.
         
         
         \begin{figure}[h]
@@ -851,7 +853,7 @@
                 \subfloat{\includegraphics[width=0.3\textwidth]{islands_late_val}} &
                 \subfloat{\includegraphics[width=0.3\textwidth]{islands_curves}}
             \end{tabular}
-            \caption{Early stopping implemented as described in Section \ref{sec:early_stopping}. When $s = 80$, training terminated after 434 epochs and weights were reset to the values they held after epoch 402 (left). When $s = 800$, training terminated after 2110 epochs and weights were reset to the values they held after epoch 1409 (centre). These saved epochs correspond to local minima of the validation cost function, in orange (right).}
+            \caption{Varying window width $s$ in early stopping, implemented as described in Section \ref{sec:early_stopping}. When $s = 80$, training terminated after 434 epochs and weights were reset to the values they held after epoch 402 (left). When $s = 800$, training terminated after 2110 epochs and weights were reset to the values they held after epoch 1409 (centre). These saved epochs correspond to local minima of the validation cost function, in orange (right).}
             \label{fig:islands}
         \end{figure}
         
