@@ -4,6 +4,8 @@
 
 ---
 
+![](report/fig/kmnist_neurons.png)
+
 This repository accompanies the paper _Neural Networks for Classification_ and contains the implementations of the code described therein.
 
 ---
